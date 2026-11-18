@@ -12,7 +12,7 @@ const phases = [
 const picks = ['small-attention', 'travel-confirm-first', 'ielts-small-story'].map(id => journals.find(j => j.id === id)!);
 const flowingBooks = [...journals.filter(j => j.category === '英语精读'), ...journals].slice(0, 13);
 
-export default function JournalWorkshop({ onRead, onGetSkill, installOpen }: { onRead: (id: string) => void; onGetSkill: () => void; installOpen: boolean }) {
+export default function JournalWorkshop({ onRead, skillUrl }: { onRead: (id: string) => void; skillUrl: string }) {
   const root = useRef<HTMLElement>(null);
   const [phase, setPhase] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -37,7 +37,7 @@ export default function JournalWorkshop({ onRead, onGetSkill, installOpen }: { o
     return () => clearInterval(timer);
   }, [stopped, phase]);
   return <section className="journal-workshop" ref={root} data-paused={stopped} data-phase={phase} aria-labelledby="workshop-title">
-    <div className="workshop-intro house-wrap"><span className="house-eyebrow"><Sparkles size={14}/> 半知精读 Skill × 半知精读教研团队</span><h1 id="workshop-title">海量精读手账，<br/>一本一本<span>认真做。</span></h1><p>半知精读 Skill，让英语资料成为可阅读、可学习的精读手账。<br/>半知创始人带领教研团队精细筛选，把值得学的一本，送到你面前。</p><div className="workshop-actions"><button className="house-button dark" onClick={onGetSkill} aria-expanded={installOpen} aria-controls="get-banzhi-skill">获取半知精读 Skill <ArrowDown size={15}/></button><button className="house-text-link" onClick={() => onRead('small-attention')}>翻开一本试读 <ArrowUpRight size={15}/></button></div><span className="workshop-available"><i/>已可在 Workbuddy 技能中下载使用</span></div>
+    <div className="workshop-intro house-wrap"><span className="house-eyebrow"><Sparkles size={14}/> 半知精读 Skill × 半知精读教研团队</span><h1 id="workshop-title">海量精读手账，<br/>一本一本<span>认真做。</span></h1><p>从外刊、新闻、TED 演讲或博客里选一段英文，做成自己的精读卡。<br/>半知创始人带领教研团队精细筛选，把值得学的一本，送到你面前。</p><div className="workshop-actions"><a className="house-button dark" href={skillUrl} target="_blank" rel="noopener noreferrer">在 WorkBuddy 获取半知精读 <ArrowUpRight size={15}/></a><button className="house-text-link" onClick={() => onRead('small-attention')}>翻开一本试读 <ArrowUpRight size={15}/></button></div><span className="workshop-available"><i/>PDF 版可打印或在 iPad 上手写，网页版可听读、做题、闯关。</span></div>
     <div className="workshop-scene house-wrap"><div className="workshop-scene-top"><span>THE JOURNAL WORKSHOP <i/> 一份资料，一本手账</span><button onClick={() => setPaused(!paused)} className="workshop-motion" disabled={reduced} aria-label={reduced ? '已按系统偏好减少动画' : paused ? '播放主视觉动画' : '暂停主视觉动画'} aria-pressed={paused || reduced}>{paused || reduced ? <Play size={12}/> : <Pause size={12}/>}<span>{reduced ? '静态展示' : paused ? '播放' : '暂停'}</span></button></div>
       <div className="workshop-stage">
         <div className="workshop-source" aria-hidden="true"><div className="workshop-source-paper"><FileText size={18}/><span>ENGLISH MATERIAL</span><b>英语资料</b><i/><i/><i/><small>文章 · 演讲 · 书籍</small></div><div className="workshop-source-paper behind"/></div>
