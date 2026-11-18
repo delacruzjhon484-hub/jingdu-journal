@@ -6,6 +6,7 @@ import { ArrowUpRight, ArrowRight, ArrowLeft, Check, Plus, X, BookOpen, Bookmark
 import { journals, lessons, clubTasks, type Journal } from './data';
 import SceneBoard from './scene-board';
 import { useJournalProduct, PurchasePanel, JournalPurchase } from './journal-purchase';
+import { PdfJournalReader } from './pdf-journal-reader';
 import FloatingSidebar from './floating-sidebar';
 import { LearningSnapshot } from './journal-experience';
 import ReadingHouse from './reading-house';
@@ -48,6 +49,7 @@ function Reader({ journal: preview, record, update, toast, lists, onClose }: { j
   const owned = Boolean(product.content);
   const [buyOpen, setBuyOpen] = useState(false);
   const [bilingual, setBilingual] = useState(true); const [answer, setAnswer] = useState(false);
+  if (preview.pdf) return <PdfJournalReader journal={preview} product={product} record={record} update={update}/>;
   return <div className="reader"><div className="reader-toolbar"><span><AppIcon code={journal.code} color={journal.accent} small/>{owned ? '完整已购手账' : '精读手账试读'}</span>{journal.translation.length > 0 && <button className={`pill ${bilingual ? 'active' : ''}`} aria-pressed={bilingual} onClick={()=>setBilingual(!bilingual)}>{bilingual ? '中英对照' : '仅看英文'}</button>}<span className="reader-price">¥12.9 / 本</span>{owned ? <a className="text-button" href={`/api/journal-content?id=${journal.id}&download=1`}><Download size={16}/>下载已购手账</a> : <button className="text-button" onClick={()=>setBuyOpen(v=>!v)} aria-expanded={buyOpen}>购买完整手账 · ¥12.9 <ArrowUpRight size={15}/></button>}</div>
     <div className="reader-content">{(buyOpen || owned) && <PurchasePanel id={journal.id} product={product}/>}<span className="eyebrow">{journal.en}</span><h2>{journal.title.replace('\n','')}</h2><p className="reader-intro">{journal.outcome}</p>
       {journal.passages.map((passage,i)=><section className="passage" key={i}><span className="passage-number">0{i+1}</span><p className={journal.category === '英语精读' ? 'english-passage' : ''}>{passage}</p>{bilingual && journal.translation[i] && <p className="translation">{journal.translation[i]}</p>}</section>)}
@@ -187,7 +189,7 @@ export default function Home() {
       <a className="shelf-practice" href="#/camp"><BookOpen size={19}/><div><strong>我的学习计划</strong><small>查看主题与学习目标</small></div><ArrowUpRight size={16}/></a>
       <a className="shelf-practice" href="#/club"><BookOpen size={19}/><div><strong>七天英语精读练习</strong><small>{local.completedDays.length} / 7 天完成</small></div><ArrowUpRight size={16}/></a>
     </div>}
-    {!['/','/board','/cinema','/cinema/upload','/community','/method','/club','/camp','/shelf'].includes(route) && !route.startsWith('/camp/') && !activeJournal && <div className="wrap empty-state page-space"><h1>这一页，还在路上。</h1><a href="#/" className="btn btn-dark">回到首页 <ArrowRight size={17}/></a></div>}
+    {!['/import','/','/board','/cinema','/cinema/upload','/community','/method','/club','/camp','/shelf'].includes(route) && !route.startsWith('/camp/') && !activeJournal && <div className="wrap empty-state page-space"><h1>这一页，还在路上。</h1><a href="#/" className="btn btn-dark">回到首页 <ArrowRight size={17}/></a></div>}
     </main>
     <footer className="site-footer"><div className="wrap footer-main">
       <div><Logo small/><p>读一篇读懂，把实力存下。<br/>精读手账 · 陪学营</p></div>

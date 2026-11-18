@@ -1,7 +1,9 @@
+import { importedJournals } from './imported-journals';
 
 export type Journal = {
   id: string; category: string; code: string; title: string; en: string; color: string;
   accent: string; desc: string; price: number; level: string; duration: string;
+  pdf?: {cover:string;previews:{src:string;page:number}[];pages:number;versions:{key:string;label:string;pages:number}[]};
   totalPassages?: number; audience: string; outcome: string; passages: string[]; translation: string[];
   vocabulary: string[]; question: string; answer: string; task: string;
 };
@@ -16,6 +18,7 @@ export const categories = [
 ];
 // Public catalogue contains trial excerpts only. Complete journals are served after purchase verification.
 export const journals: Journal[] = [
+  ...importedJournals,
   {
     "id": "small-attention",
     "category": "英语精读",

@@ -17,10 +17,11 @@ export const cinemaFeed = '/api/cinema/submissions';
 
 export function themeJournals(theme: typeof cinemaThemes[number]) {
   const ids = new Set(boardScenes.filter(scene => scene.group === theme.name).flatMap(scene => scene.bookIds));
-  return journals.filter(journal => ids.has(journal.id));
+  return journals.filter(journal => ids.has(journal.id) || (theme.id === 'english' && Boolean(journal.pdf))); 
 }
 
 export function themeForJournal(id: string) {
+  if (journals.find(j=>j.id===id)?.pdf) return cinemaThemes[0];
   const group = boardScenes.find(scene => scene.bookIds[0] === id)?.group ?? boardScenes.find(scene => scene.bookIds.includes(id))?.group;
   return cinemaThemes.find(theme => theme.name === group) ?? cinemaThemes[2];
 }

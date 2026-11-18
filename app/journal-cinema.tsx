@@ -14,12 +14,12 @@ type Film = {
   caption: string; submission?: CinemaSubmission;
 };
 const originals = new Map(journals.map((journal, index) => [journal.id, makeOriginal(journal, index)]));
-const featured = journals.find(journal => journal.id === 'ai-as-coach') ?? journals[0];
+const featured = journals.find(journal => journal.id === 'pdf-deep-reading') ?? journals[0];
 const selectedIds = ['ai-as-coach', 'travel-confirm-first', 'after-a-breakup', 'story-in-frames', 'ielts-small-story', 'presentation-one-idea'];
 
 function makeOriginal(journal: Journal, number: number): Film {
   return { id: journal.id, title: journal.title, label: themeForJournal(journal.id).name,
-    color: journal.color, ink: journal.accent, number, caption: journal.duration };
+    color: journal.color, ink: journal.accent, number, caption: journal.pdf ? `${journal.pdf.pages} 页 · PDF` : journal.duration };
 }
 
 function makeSubmission(item: CinemaSubmission, index: number): Film {
@@ -29,6 +29,8 @@ function makeSubmission(item: CinemaSubmission, index: number): Film {
 }
 
 function Poster({ film, hero = false }: { film: Film; hero?: boolean }) {
+  const pdf=journals.find(j=>j.id===film.id)?.pdf;
+  if(pdf)return <div className={`cinema-poster cinema-pdf-poster ${hero?'cinema-poster-hero':''}`} aria-hidden="true"><img src={pdf.cover} alt="" loading={hero?'eager':'lazy'}/><span className="cinema-pdf-pages">PDF · {pdf.pages} 页</span></div>;
   const motif = film.number % 5;
   return <div className={`cinema-poster ${hero ? 'cinema-poster-hero' : ''}`} style={{ '--poster-paper': film.color, '--poster-ink': film.ink } as CSSProperties} aria-hidden="true">
     <div className="cinema-poster-top"><span>精读手账</span><span>{String(film.number + 1).padStart(2, '0')}</span></div>
@@ -219,15 +221,16 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
       </div>
       <div className="cinema-bar"><div className="cinema-tabs" role="group" aria-label="精读主题分类">
         {[{ id: 'all', name: '全部清单' }, ...cinemaThemes, { id: 'submissions', name: '观众投稿' }].map(tab => <button key={tab.id} aria-pressed={filter === tab.id} onClick={() => { setFilter(tab.id); if (tab.id === 'submissions' && category !== 'PDF 投稿') setCategory(''); }}>{tab.name}</button>)}
-      </div><span className="cinema-count">{journals.length} 本原创 · {submissions.length} 份投稿</span></div>
+      </div><span className="cinema-count">{journals.length} 本手账 · {submissions.length} 份投稿</span></div>
       {notice && <p className="cinema-notice" role="status">{notice}</p>}
       {searching ? (results.length
         ? <FilmRow title="搜索与筛选结果" detail={`找到 ${results.length} 份手账`} films={results} onOpen={openFilm} grid/>
         : <section className="cinema-empty"><h2>还没找到符合条件的手账</h2><p>试试换个关键词，或浏览全部清单。</p><button className="cinema-btn cinema-upload" onClick={() => { setQuery(''); setCategory(''); setFilter('all'); }}>清除筛选</button></section>)
         : <>
-      {filter === 'all' && <FilmRow title="今天读什么" detail="先挑一本最贴近当下的手账。" films={selectedIds.map(id => originals.get(id)!)} onOpen={openFilm}/>}
+      {filter === 'all' && <FilmRow title="新上架 · 半知精读 PDF" detail="14 个主题 · 同主题版本合并 · 点击封面试读真实内页" films={journals.filter(j=>j.pdf).map(j=>originals.get(j.id)!)} onOpen={openFilm} grid/>}
+      {filter === 'all' && <FilmRow title="方法体验 · 今天读什么" detail="先挑一本最贴近当下的手账。" films={selectedIds.map(id => originals.get(id)!)} onOpen={openFilm}/>}
       {cinemaThemes.filter(theme => filter === 'all' || filter === theme.id).map(theme => <FilmRow key={theme.id} title={theme.name} detail={theme.line} films={[
-        ...themeJournals(theme).map(journal => originals.get(journal.id)!), ...audienceFilms.filter(film => film.submission?.theme === theme.id),
+        ...themeJournals(theme).filter(j=>filter!=='all'||!j.pdf).map(journal => originals.get(journal.id)!), ...audienceFilms.filter(film => film.submission?.theme === theme.id),
       ]} onOpen={openFilm}/>)}
       {(filter === 'all' || filter === 'submissions') && (audienceFilms.length
         ? <FilmRow title="观众投稿" detail="来自其他作者的学习、工作和生活手账。" films={audienceFilms} onOpen={openFilm}/>

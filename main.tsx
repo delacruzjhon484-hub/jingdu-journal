@@ -11,5 +11,7 @@ import './app/journal-workshop.css';
 import './app/floating-sidebar.css';
 import './app/reading-experience.css';
 import './app/journal-shop.css';
+import './app/pdf-library.css';
 createRoot(document.getElementById('root')!).render(<Home/>);
+
 
