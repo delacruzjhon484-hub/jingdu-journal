@@ -1,5 +1,4 @@
 'use client';
-
 import { siteFetch as fetch } from './pages-runtime';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
@@ -247,7 +246,7 @@ export default function BoardLists({ listsState, onRead, initialId }: {
   return <section className="board-lists" id="board-lists" tabIndex={-1} aria-labelledby="board-lists-title">
     <div className="board-lists-head">
       <div><span className="eyebrow"><FolderOpen size={14}/> PERSONAL COLLECTIONS</span><h2 id="board-lists-title">我的手账清单</h2>
-        <p>把手账按自己的场景归在一起。清单仅保存在当前浏览器，不跨设备同步。</p></div>
+        <p>把手账按自己的场景归在一起。清单保存在你的账号下。</p></div>
       <button className="board-list-primary" onClick={() => setCreating(true)}><Plus size={16}/>新建清单</button>
     </div>
     {notice && <p className="board-list-notice" role="status">{notice}</p>}
@@ -275,7 +274,7 @@ export default function BoardLists({ listsState, onRead, initialId }: {
         {!active.bookIds.length && <p className="board-list-hint">这份清单还是空的。打开「编辑清单」就能加入手账。</p>}
       </div>
     </> : <div className="board-list-empty">
-      {error ? <p>{error} <button onClick={retry}>重试</button></p> : !feed ? <p>正在读取你的清单…</p> : <p>登录后，可在这里管理想读和自建清单。</p>}
+      {error ? <p>{error} <button onClick={retry}>重试</button></p> : !feed ? <p>正在读取你的清单…</p> : <p>在这里管理当前浏览器保存的想读和自建清单。</p>}
     </div>}
     {draft && <ListEditor draft={draft} editingId={editing?.id} feed={feed} loadError={error} retry={retry} onClose={close} onSaved={saved} onRemoved={removed}/>}
   </section>;
