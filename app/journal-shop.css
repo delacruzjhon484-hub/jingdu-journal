@@ -1,0 +1,18 @@
+.cinema-card-price {display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0 8px;color:#e6cda0;font-size:14px;font-weight:600;}.cinema-card-price small {display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#acbaa2;font-weight:400;}
+.cinema-feature-price {display:flex;align-items:baseline;gap:12px;margin:20px 0 5px;color:#e6cda0;}.cinema-feature-price strong{font:38px Georgia,serif;}.cinema-feature-price span{font-size:11px;color:#b1bda8;}
+.cinema-buy-steps {display:flex;flex-wrap:wrap;gap:15px 25px;padding:22px 0;border-block:1px solid #394b3a;font-size:12px;color:#c3cbb9;margin-bottom:25px;}.cinema-buy-steps b {font:italic 15px Georgia,serif;margin-right:7px;color:#92ab7b;}.cinema-buy-steps small {flex-basis:100%;font-size:10px;color:#a8b79b;}
+.editorial-card-sale {font:18px Georgia,serif;color:#526c40;display:flex;align-items:center;justify-content:space-between;padding-block:12px!important;}.editorial-card-sale span{font:10px system-ui,sans-serif;color:#7c8b6e;}
+.reader-toolbar {flex-wrap:wrap;}.reader-toolbar .reader-price {font:15px Georgia,serif;color:#7d6338;white-space:nowrap;}.detail-price {font:28px Georgia,serif;color:#6e733c;}.detail-price small{font:12px system-ui,sans-serif;}
+.purchase-panel {padding:27px;border:1px solid #cbd6be;border-radius:6px;background:#f1f3e8;margin-block:20px 28px;color:#364f33;}.purchase-heading{display:flex;align-items:start;justify-content:space-between;gap:15px;}.purchase-heading >div>small{font-size:10px;color:#8a977c;}.purchase-heading h3{font:600 22px/1.6 'Songti SC',serif;margin-top:8px;}.journal-price{font:34px/1.2 Georgia,serif;white-space:nowrap;color:#6b7345;}.journal-price small{display:block;font:10px system-ui,sans-serif;text-align:right;margin-top:6px;color:#839277;}
+.purchase-panel ul{list-style:none;padding:18px 0;margin:18px 0;border-block:1px solid #d8e0cd;display:grid;gap:10px;}.purchase-panel li{display:flex;align-items:center;gap:10px;font-size:12px;color:#718363;}.purchase-panel .btn{font-size:12px;}.purchase-panel .btn:disabled{opacity:.6;cursor:not-allowed;}.purchase-status{font-size:11px;line-height:1.9;color:#859477;margin-top:13px;}.purchase-status button{display:inline-flex;gap:6px;align-items:center;margin-left:10px;text-decoration:underline;}.purchase-panel .house-text-link{font-size:10px;margin-top:9px;}
+.trial-boundary{margin-block:30px;padding:25px;border:1px dashed #bcccae;background:#f4f5ed;text-align:center;}.trial-boundary>span{font-size:11px;letter-spacing:.02em;color:#7d906f;}.trial-boundary p{font-size:13px;line-height:1.9;color:#738565;margin:12px 0 20px;}.trial-boundary .btn{font-size:12px;}
+@media(max-width:640px){.cinema-card-price{font-size:13px;}.cinema-feature-price{flex-wrap:wrap;gap:7px;}.cinema-buy-steps{flex-direction:column;gap:13px;}.purchase-panel{padding:20px;}.purchase-heading{flex-wrap:wrap;}.purchase-heading h3{font-size:20px;}.journal-price{font-size:29px;}.trial-boundary{padding:20px 16px;}}
+/* Keep shop labels legible on the journal house's paper palette. */
+.cinema-card-price,.cinema-feature-price {color:#6e5731;}
+.cinema-card-price small,.cinema-feature-price span {color:#617454;}
+.cinema-buy-steps {color:#4f6745;border-color:#cbd3c1;}
+.cinema-buy-steps b,.cinema-buy-steps small {color:#728563;}
+.cinema .editorial-on-dark .house-section-top h2 {color:#334b37;}
+.cinema .editorial-on-dark .house-eyebrow,.cinema .editorial-on-dark .house-section-note,.cinema .editorial-on-dark .editorial-caption {color:#718165;}
+.cinema-learning-level {color:#5d734f;}
+.cinema-film .cinema-learning-output {color:#728166;}

@@ -10,5 +10,6 @@ import './app/skill-community.css';
 import './app/journal-workshop.css';
 import './app/floating-sidebar.css';
 import './app/reading-experience.css';
+import './app/journal-shop.css';
 createRoot(document.getElementById('root')!).render(<Home/>);
 

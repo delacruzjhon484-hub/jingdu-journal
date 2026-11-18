@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { ArrowUpRight, ArrowRight, ArrowLeft, Check, Plus, X, BookOpen, Bookmark, Download, ChevronDown, Copy, CheckCheck, Menu, PenLine, Headphones, Layers3, Sparkles, Clock3, ShoppingBag, House, LibraryBig, UsersRound, NotebookPen } from 'lucide-react';
 import { journals, lessons, clubTasks, type Journal } from './data';
 import SceneBoard from './scene-board';
+import { useJournalProduct, PurchasePanel, JournalPurchase } from './journal-purchase';
 import FloatingSidebar from './floating-sidebar';
 import { LearningSnapshot } from './journal-experience';
 import ReadingHouse from './reading-house';
@@ -21,11 +22,9 @@ const KEY = 'everything-journal-v1';
 const navItems = [['/', '首页'], ['/cinema', '精读手账'], ['/camp', '陪学营'], ['/community', '半知搭子'], ['/shelf', '我的手账']];
 const navIcons = [House, LibraryBig, UsersRound, Sparkles, NotebookPen];
 function escapeHtml(value: string) { return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!)); }
-function downloadJournal(journal: Journal, note: string) {
-  const body = journal.passages.map((p, i) => `<section><p>${escapeHtml(p).replaceAll('\n', '<br>')}</p>${journal.translation[i] ? `<p class="translation">${escapeHtml(journal.translation[i])}</p>` : ''}</section>`).join('');
-  const html = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>${escapeHtml(journal.title.replace('\n', ''))} · 精读手账馆</title><style>body{max-width:740px;margin:64px auto;padding:0 28px;color:#242824;font:17px/1.95 system-ui,sans-serif}h1{font-size:38px}h2{font-size:22px;margin-top:32px}section{margin:28px 0}.translation{color:#666;font-size:15px}small{color:#666}footer{margin-top:48px;border-top:1px solid #ddd;padding-top:20px;font-size:13px}@media print{body{margin:20px auto}section{break-inside:avoid}}</style><small>JINGDU JOURNAL HOUSE / ${journal.code} / 原创体验篇</small><h1>${escapeHtml(journal.title.replace('\n', ''))}</h1><p>${escapeHtml(journal.outcome)}</p>${body}<h2>关键表达与概念</h2><ul>${journal.vocabulary.map(v=>`<li>${escapeHtml(v)}</li>`).join('')}</ul><h2>理解与练习</h2><p>${escapeHtml(journal.question)}</p><p>${escapeHtml(journal.task)}</p><h2>我的笔记</h2><p>${escapeHtml(note || '在这里留下自己的理解……').replaceAll('\n', '<br>')}</p><details><summary>参考思路</summary><p>${escapeHtml(journal.answer)}</p></details><footer>精读手账馆 · 本站原创示例文本与练习。供个人学习、打印与批注。未收录第三方文章、演讲文稿或音视频。<br>浏览器中打开本文件后，可使用打印功能另存为 PDF。</footer></html>`;
-  const url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
-  const a = document.createElement('a'); a.href = url; a.download = `${journal.id}-journal.html`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+function downloadNotes(journal: Journal, note: string) {
+  const html = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>${escapeHtml(journal.title.replace('\n',''))} · 我的笔记</title><style>body{max-width:740px;margin:60px auto;padding:0 25px;font:17px/1.9 system-ui}p{white-space:pre-wrap}</style><small>精读手账馆 / 我的个人学习笔记</small><h1>${escapeHtml(journal.title.replace('\n',''))}</h1><p>${escapeHtml(note || '尚未填写笔记。')}</p><footer>本文件仅包含你写下的笔记，不含完整付费手账。</footer></html>`;
+  const url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`${journal.id}-my-notes.html`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
 function Logo({ small = false }: { small?: boolean }) { return <a href="#/" className={`brand ${small ? 'brand-small' : ''}`} aria-label="精读手账馆首页"><img className="house-brand-logo" src="./banzhi-logo-transparent.png" alt="半知" width={55} height={55}/><span>精读手账馆<small>JINGDU JOURNAL HOUSE</small></span></a>; }
 function AppIcon({ code, color, small = false }: { code: string; color: string; small?: boolean }) { return <span className={`app-icon ${small ? 'small' : ''}`} style={{ '--app-color': color } as CSSProperties}>{code}</span>; }
@@ -43,14 +42,19 @@ function Modal({ title, children, onClose, wide = false }: { title: string; chil
   useEffect(() => { const dialog = ref.current!; dialog.showModal(); const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = previous; }; }, []);
   return <dialog ref={ref} className={`modal ${wide ? 'modal-wide' : ''}`} aria-label={title} onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if (e.target === ref.current) onClose(); }}><div className="modal-head"><span>{title}</span><button className="icon-button" onClick={onClose} aria-label="关闭窗口"><X size={21}/></button></div>{children}</dialog>;
 }
-function Reader({ journal, record, update, toast, lists, onClose }: { journal: Journal; record: { note: string; done: boolean }; update: (record: { note: string; done: boolean }) => void; toast: (s: string) => void; lists: BoardListFeedState; onClose: () => void }) {
+function Reader({ journal: preview, record, update, toast, lists, onClose }: { journal: Journal; record: { note: string; done: boolean }; update: (record: { note: string; done: boolean }) => void; toast: (s: string) => void; lists: BoardListFeedState; onClose: () => void }) {
+  const product = useJournalProduct(preview.id);
+  const journal = product.content ?? preview;
+  const owned = Boolean(product.content);
+  const [buyOpen, setBuyOpen] = useState(false);
   const [bilingual, setBilingual] = useState(true); const [answer, setAnswer] = useState(false);
-  return <div className="reader"><div className="reader-toolbar"><span><AppIcon code={journal.code} color={journal.accent} small/>完整原创体验篇</span>{journal.translation.length > 0 && <button className={`pill ${bilingual ? 'active' : ''}`} aria-pressed={bilingual} onClick={()=>setBilingual(!bilingual)}>{bilingual ? '中英对照' : '仅看英文'}</button>}<button className="text-button" onClick={()=>{ downloadJournal(journal, record.note); toast('已下载原创手账，打开文件可打印为 PDF'); }}><Download size={16}/>下载手账</button></div>
-    <div className="reader-content"><span className="eyebrow">{journal.en}</span><h2>{journal.title.replace('\n','')}</h2><p className="reader-intro">{journal.outcome}</p>
+  return <div className="reader"><div className="reader-toolbar"><span><AppIcon code={journal.code} color={journal.accent} small/>{owned ? '完整已购手账' : '精读手账试读'}</span>{journal.translation.length > 0 && <button className={`pill ${bilingual ? 'active' : ''}`} aria-pressed={bilingual} onClick={()=>setBilingual(!bilingual)}>{bilingual ? '中英对照' : '仅看英文'}</button>}<span className="reader-price">¥12.9 / 本</span>{owned ? <a className="text-button" href={`/api/journal-content?id=${journal.id}&download=1`}><Download size={16}/>下载已购手账</a> : <button className="text-button" onClick={()=>setBuyOpen(v=>!v)} aria-expanded={buyOpen}>购买完整手账 · ¥12.9 <ArrowUpRight size={15}/></button>}</div>
+    <div className="reader-content">{(buyOpen || owned) && <PurchasePanel id={journal.id} product={product}/>}<span className="eyebrow">{journal.en}</span><h2>{journal.title.replace('\n','')}</h2><p className="reader-intro">{journal.outcome}</p>
       {journal.passages.map((passage,i)=><section className="passage" key={i}><span className="passage-number">0{i+1}</span><p className={journal.category === '英语精读' ? 'english-passage' : ''}>{passage}</p>{bilingual && journal.translation[i] && <p className="translation">{journal.translation[i]}</p>}</section>)}
+      {!owned && <div className="trial-boundary"><span>试读到这里 · 完整手账共 {journal.totalPassages ?? 3} 个段落</span><p>购买后解锁完整内容、词句讲解与参考思路，并下载留存。</p><button className="btn btn-dark" onClick={()=>{setBuyOpen(true);requestAnimationFrame(()=>document.getElementById('journal-purchase')?.scrollIntoView({behavior:'smooth',block:'center'}));}}>购买完整手账 · ¥12.9 <ArrowUpRight size={15}/></button></div>}
       <div className="vocabulary"><h3><PenLine size={17}/>把这些留在手账里</h3>{journal.vocabulary.map(v=><p key={v}>{v}</p>)}</div>
-      <div className="question-block"><small>CHECK YOUR UNDERSTANDING</small><h3>{journal.question}</h3><button className="text-button" onClick={()=>setAnswer(!answer)} aria-expanded={answer}>{answer ? '收起参考思路' : '先想一想，再看参考思路'}<ChevronDown size={15}/></button>{answer && <p className="answer">{journal.answer}</p>}</div>
-      <label className="notes-label" htmlFor="reader-note"><PenLine size={17}/>轮到你了</label><p>{journal.task}</p><textarea id="reader-note" rows={4} placeholder="用自己的话写下来。笔记自动保存在当前浏览器。" value={record.note} onChange={e=>update({ ...record, note: e.target.value })}/><div className="note-status"><span>仅保存在当前浏览器</span><button className={record.done ? 'btn btn-green' : 'btn btn-dark'} onClick={()=>update({ ...record, done: !record.done })}>{record.done ? <CheckCheck size={17}/> : <Check size={17}/>} {record.done ? '已完成这次精读' : '标记本次精读完成'}</button></div>
+      {owned && <div className="question-block"><small>CHECK YOUR UNDERSTANDING</small><h3>{journal.question}</h3><button className="text-button" onClick={()=>setAnswer(!answer)} aria-expanded={answer}>{answer ? '收起参考思路' : '先想一想，再看参考思路'}<ChevronDown size={15}/></button>{answer && <p className="answer">{journal.answer}</p>}</div>}
+      <label className="notes-label" htmlFor="reader-note"><PenLine size={17}/>轮到你了</label><p>{journal.task}</p><textarea id="reader-note" rows={4} placeholder="用自己的话写下来。笔记自动保存在当前浏览器。" value={record.note} onChange={e=>update({ ...record, note: e.target.value })}/><div className="note-status"><span>仅保存在当前浏览器</span><button className={record.done ? 'btn btn-green' : 'btn btn-dark'} onClick={()=>update({ ...record, done: !record.done })}>{record.done ? <CheckCheck size={17}/> : <Check size={17}/>} {record.done ? (owned ? '已完成这次精读' : '已完成试读练习') : (owned ? '标记本次精读完成' : '完成试读练习')}</button></div>
       <div className="reader-next"><AddToList journalId={journal.id} lists={lists}/><div>
         <a href={`#/journal/${journal.id}`} onClick={onClose}>手账详情 <ArrowUpRight size={13}/></a>
         <a href="#/method" onClick={onClose}>学精读方法 <ArrowUpRight size={13}/></a>
@@ -58,7 +62,7 @@ function Reader({ journal, record, update, toast, lists, onClose }: { journal: J
         <a href="#/camp" onClick={onClose}>了解陪学营 <ArrowUpRight size={13}/></a>
         <a href="#/shelf" onClick={onClose}>我的手账 <ArrowUpRight size={13}/></a>
       </div></div>
-      <div className="source-note"><b>关于这份内容</b><p>本站原创示例文本与练习，供个人学习、打印和批注。所有情境均为教学虚构，未收录第三方外刊全文、演讲文稿或音视频。本篇提供完整原创体验。</p></div>
+      <div className="source-note"><b>关于这份内容</b><p>本站原创示例文本与练习，供个人学习、打印和批注。所有情境均为教学虚构，未收录第三方外刊全文、演讲文稿或音视频。{owned ? '当前为已购完整手账，可下载留存。' : '当前显示试读节选；购买后可下载完整手账。'}</p></div>
     </div></div>;
 }
 export default function Home() {
@@ -150,12 +154,12 @@ export default function Home() {
         <h1>{activeJournal.title.replace('\n','')}</h1><p className="detail-desc">{activeJournal.desc}</p>
         <div className="detail-facts"><span><Clock3 size={17}/>{activeJournal.duration}</span><span><BookOpen size={17}/>{activeJournal.level}</span><span><Download size={17}/>网页 · 可打印文件</span></div>
         <div className="detail-outcome"><small>读完，你会带走</small><p>{activeJournal.outcome}</p></div>
-        <div className="detail-buttons"><button className="btn btn-dark" onClick={() => setReaderId(activeJournal.id)}>开始精读 <ArrowUpRight size={17}/></button></div>
+        <div className="detail-buttons"><button className="btn btn-dark" onClick={() => setReaderId(activeJournal.id)}>免费试读 <ArrowUpRight size={17}/></button><span className="detail-price">¥12.9 <small>/ 本</small></span></div><JournalPurchase id={activeJournal.id}/>
         <AddToList key={activeJournal.id} journalId={activeJournal.id} lists={lists}/>
       </div></div>
       <div className="detail-info-grid">
         <div><span className="eyebrow">MADE FOR YOU</span><h2>适合谁</h2><p>{activeJournal.audience}</p></div>
-        <div><span className="eyebrow">WHAT IS INSIDE</span><h2>手账内容</h2><p>原创文本、精读、理解题、练习和笔记。可下载打印。</p></div>
+        <div><span className="eyebrow">WHAT IS INSIDE</span><h2>手账内容</h2><p>试读部分内容，购买后解锁完整文本、精读讲解与练习，可下载打印。</p></div>
         <div><span className="eyebrow">SOURCE & USE</span><h2>内容来源</h2><p>本站原创示例文本与练习，供个人学习、打印与批注。</p></div>
       </div>
     </div>}
@@ -176,7 +180,7 @@ export default function Home() {
       <section className="shelf-notes" aria-labelledby="notes-title"><h2 id="notes-title" className="shelf-title">我的学习成果</h2>
         {noted.map(journal => <article className="shelf-note" key={journal.id}><h3>{journal.title.replace('\n','')}</h3><p>{record(journal.id).note}</p>
           <div><button className="text-button" onClick={() => setReaderId(journal.id)}>打开手账 <ArrowUpRight size={14}/></button>
-          <button className="text-button" onClick={() => downloadJournal(journal, record(journal.id).note)}>下载笔记 <Download size={14}/></button></div></article>)}
+          <button className="text-button" onClick={() => downloadNotes(journal, record(journal.id).note)}>下载笔记 <Download size={14}/></button></div></article>)}
         {Object.entries(local.outputs).map(([id, output]) => <article className="shelf-note" key={id}><h3>{savedExerciseTitles[id]}</h3><p>{output}</p></article>)}
         {!noted.length && !Object.keys(local.outputs).length && <p className="shelf-empty">在任意原创手账里写下一句，笔记就会出现在这里。</p>}
       </section>
@@ -190,8 +194,8 @@ export default function Home() {
       <div><h3>精读与陪学</h3><a href="#/cinema">精读手账</a><a href="#/camp">陪学营</a><a href="#/board">场景白板</a></div>
       <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知搭子</a><a href="#/method">精读方法</a><span className="footer-founder">半知创始人</span></div>
       <div className="footer-note"><span className="hand-note">保持好奇，<br/>慢慢成为自己的作者。</span><small>READ DEEPLY. KEEP SOMETHING.</small></div>
-    </div><div className="wrap pages-edition-note">公开体验版 · 清单与学习记录保存在当前浏览器。<a href="https://everything-journal.delacruzjhon484.chatgpt.site/">前往在线版使用投稿与搭子名片 <ArrowUpRight size={12}/></a></div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>半知创始人</span></div></footer></div>
-    {readerJournal && <Modal title="精读工作台" wide onClose={() => setReaderId(null)}>
+    </div><div className="wrap pages-edition-note">公开体验版 · 清单与学习记录保存在当前浏览器。<a href="https://everything-journal.delacruzjhon484.chatgpt.site/">前往在线版使用购买、投稿与搭子名片 <ArrowUpRight size={12}/></a></div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>半知创始人</span></div></footer></div>
+    {readerJournal && <Modal title="精读手账 · 试读与已购阅读" wide onClose={() => setReaderId(null)}>
       <Reader key={readerJournal.id} journal={readerJournal} record={record(readerJournal.id)} update={value => setRecord(readerJournal.id, value)} toast={toast} lists={lists} onClose={() => setReaderId(null)}/>
     </Modal>}
     {createDraft && <ListEditor draft={createDraft} feed={lists.feed} loadError={lists.error} retry={lists.retry} onClose={() => setCreateDraft(null)} onSaved={openSavedList} onRemoved={() => {}}/>}

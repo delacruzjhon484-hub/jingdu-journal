@@ -50,7 +50,7 @@ export default function JournalWorkshop({ onRead, onGetSkill, installOpen }: { o
         <div className="workshop-stage-labels" aria-hidden="true"><span>英语学习资料</span><ArrowRight size={13}/><span>Skill 辅助制作</span><ArrowRight size={13}/><span>教研精细筛选</span><ArrowRight size={13}/><span>你的下一本精读</span></div>
       </div>
       <div className="workshop-explanation" id="workshop-explanation"><div className="workshop-phase-picker" role="group" aria-label="查看手账制作环节">{phases.map((item, i) => <button key={item.label} aria-pressed={phase === i} onClick={() => setPhase(i)}><span>0{i + 1}</span>{item.label}</button>)}</div><div className="workshop-phase-copy"><h2>{phases[phase].title}</h2><p>{phases[phase].copy}</p></div></div>
-      <div className="workshop-picks"><span>先翻一本<br/><small>原创体验篇</small></span>{picks.map(journal => <button key={journal.id} onClick={() => onRead(journal.id)}><span className="workshop-pick-spine" style={{ background: journal.accent }}/><span><strong>{journal.title.replace('\n', '')}</strong><small>{journal.duration} · 点击试读</small></span><ArrowUpRight size={15}/></button>)}</div><p className="workshop-disclosure">制作与筛选流程示意 · 流动封面为本站原创体验篇 · 主题分类展示内容拓展方向</p>
+      <div className="workshop-picks"><span>先翻一本<br/><small>原创试读篇</small></span>{picks.map(journal => <button key={journal.id} onClick={() => onRead(journal.id)}><span className="workshop-pick-spine" style={{ background: journal.accent }}/><span><strong>{journal.title.replace('\n', '')}</strong><small>{journal.duration} · 点击试读</small></span><ArrowUpRight size={15}/></button>)}</div><p className="workshop-disclosure">制作与筛选流程示意 · 流动封面为本站原创试读篇 · 主题分类展示内容拓展方向</p>
     </div>
   </section>;
 }

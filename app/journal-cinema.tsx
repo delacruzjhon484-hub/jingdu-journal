@@ -73,9 +73,9 @@ function FilmRow({ title, detail, films, onOpen, grid = false }: { title: string
       </div>}
     </div>
     <div className={grid ? "cinema-rail cinema-results" : "cinema-rail"} ref={rail} onScroll={updateEdges}>
-      {films.map(film => <button key={film.id} className="cinema-film" onClick={() => onOpen(film)} aria-label={`打开《${film.title.replace('\n', '')}》`}>
+      {films.map(film => <button key={film.id} className="cinema-film" onClick={() => onOpen(film)} aria-label={`${film.submission ? '打开' : '试读'}《${film.title.replace('\n', '')}》`}>
         <div className="cinema-film-image"><Poster film={film}/><span className="cinema-film-play"><Play size={16} fill="currentColor"/></span></div>
-        <strong>{film.title.replace('\n', '')}</strong><small>{film.label} · {film.caption}</small>{!film.submission && <><span className="cinema-learning-level">{journals.find(j => j.id === film.id)?.level}</span><p className="cinema-learning-output">{journals.find(j => j.id === film.id)?.outcome}</p></>}
+        <div className="cinema-card-price"><span>{film.submission ? '免费 · 作者分享' : '¥12.9 / 本'}</span><small>{film.submission ? '查看' : '点击试读'} <ArrowUpRight size={12}/></small></div><strong>{film.title.replace('\n', '')}</strong><small>{film.label} · {film.caption}</small>{!film.submission && <><span className="cinema-learning-level">{journals.find(j => j.id === film.id)?.level}</span><p className="cinema-learning-output">{journals.find(j => j.id === film.id)?.outcome}</p></>}
       </button>)}
     </div>
   </section>;
@@ -196,9 +196,9 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
         <div className="cinema-hero-copy">
           <div className="cinema-wordmark"><Clapperboard size={18}/>精读手账馆 <span>/</span> JOURNAL COLLECTION</div>
           <h1 id="cinema-title">精读手账</h1>
-          <p className="cinema-subtitle">挑一本精读手账，留下自己的理解。</p>
+          <p className="cinema-subtitle">先试读，再带走你喜欢的一本。</p>
           <div className="cinema-feature"><span>本期推荐</span><h2>{featured.title.replace('\n', '')}</h2><p>{featured.desc}</p></div>
-          <div className="cinema-actions"><button className="cinema-btn cinema-play" onClick={() => onRead(featured.id)}><Play size={16} fill="currentColor"/>开始阅读</button><button className="cinema-btn cinema-upload" onClick={showUpload}><Plus size={17}/>上传手账</button></div>
+          <div className="cinema-feature-price"><strong>¥12.9</strong><span>/ 本 · 购买后下载完整手账</span></div><div className="cinema-actions"><button className="cinema-btn cinema-play" onClick={() => onRead(featured.id)}><Play size={16} fill="currentColor"/>免费试读</button><button className="cinema-btn cinema-upload" onClick={showUpload}><Plus size={17}/>上传手账</button></div>
         </div>
         <div className="cinema-hero-stage" aria-hidden="true">
           <span className="cinema-screen-label">THIS WEEK’S READING</span>
@@ -207,6 +207,7 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
           <span className="cinema-stage-number">{String(featureFilm.number + 1).padStart(2, '0')}<small>/ 本期推荐</small></span>
         </div>
       </section>
+      <div className="cinema-buy-steps"><span><b>01</b> 点击封面，免费试读</span><span><b>02</b> 单本购买 ¥12.9</span><span><b>03</b> 付费后下载，随时重读</span><small>当前可试读，购买暂未开放。</small></div>
       {!query && !category && filter === 'all' && <EditorialShelf onRead={onRead} compact/>}
       <div className="cinema-find">
         <label><Search size={18}/><input type="search" aria-label="搜索手账" placeholder="搜手账名称、场景或作者" value={query} onChange={event => setQuery(event.target.value)}/></label>
