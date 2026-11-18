@@ -188,9 +188,9 @@ export default function Home() {
     <footer className="site-footer"><div className="wrap footer-main">
       <div><Logo small/><p>读一篇读懂，把实力存下。<br/>精读手账 · 陪学营</p></div>
       <div><h3>精读与陪学</h3><a href="#/cinema">精读手账</a><a href="#/camp">陪学营</a><a href="#/board">场景白板</a></div>
-      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知搭子</a><a href="#/method">精读方法</a><span className="footer-founder">创始人 · 石雄</span></div>
+      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知搭子</a><a href="#/method">精读方法</a><span className="footer-founder">半知创始人</span></div>
       <div className="footer-note"><span className="hand-note">保持好奇，<br/>慢慢成为自己的作者。</span><small>READ DEEPLY. KEEP SOMETHING.</small></div>
-    </div><div className="wrap pages-edition-note">公开体验版 · 清单与学习记录保存在当前浏览器。<a href="https://everything-journal.delacruzjhon484.chatgpt.site/">前往在线版使用投稿与搭子名片 <ArrowUpRight size={12}/></a></div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>创始人 · 石雄</span></div></footer></div>
+    </div><div className="wrap pages-edition-note">公开体验版 · 清单与学习记录保存在当前浏览器。<a href="https://everything-journal.delacruzjhon484.chatgpt.site/">前往在线版使用投稿与搭子名片 <ArrowUpRight size={12}/></a></div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>半知创始人</span></div></footer></div>
     {readerJournal && <Modal title="精读工作台" wide onClose={() => setReaderId(null)}>
       <Reader key={readerJournal.id} journal={readerJournal} record={record(readerJournal.id)} update={value => setRecord(readerJournal.id, value)} toast={toast} lists={lists} onClose={() => setReaderId(null)}/>
     </Modal>}

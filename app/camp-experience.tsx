@@ -9,7 +9,7 @@ function jumpTo(id: string) {
 }
 
 const supportTeam = [
-  { id: 'person', title: '石雄真人陪学', role: '陪你建立节奏，也一起面对卡点。', label: '真人陪伴', icon: Users,
+  { id: 'person', title: '半知创始人真人陪学', role: '陪你建立节奏，也一起面对卡点。', label: '真人陪伴', icon: Users,
     tasks: ['带读中的思路引导', '关键问题的讨论与反馈', '阶段复盘与结营回看'], result: '有人回应，也有人一起往前走。' },
   { id: 'agent', title: 'Agent 助教团', role: '把随手一问，变成具体的学习动作。', label: '日常练习', icon: MessageCircle,
     tasks: ['词句助教 · 拆长句、看搭配', '表达助教 · 练复述、找遗漏', '复习助教 · 整理回看清单'], result: '把问题拆小，把练习做具体。' },
@@ -18,16 +18,16 @@ const supportTeam = [
 ];
 
 const dailySteps = [
-  { title: '带读', subtitle: '读进去', owner: '石雄真人陪学 × 半知精读教研团队', desc: '先带着一个问题进入文章，再拆开关键句、主张和证据。',
+  { title: '带读', subtitle: '读进去', owner: '半知创始人真人陪学 × 半知精读教研团队', desc: '先带着一个问题进入文章，再拆开关键句、主张和证据。',
     task: '读完后用自己的话说说，窗边的笔记本改变了什么？', output: '留下一个自己的解释',
     prompt: '我在精读一篇关于注意力的文章。请先问我“窗边的笔记本最先改变了什么”，等我回答后再追问证据，最后帮我区分文章写到的内容和我的推断。' },
   { title: '打卡', subtitle: '留痕迹', owner: '社群 × Agent 助教团', desc: '交一段复述、一条批注或一个练习，让这次阅读有东西留下。',
     task: '用 “Before…, I…” 写一句你愿意尝试的小改变。', output: '留下一句迁移表达',
     prompt: '我想用 Before…, I… 写一句日常表达。请先让我自己写，收到后检查句意是否清楚、时态是否一致，再给我一个相似场景继续练习。' },
-  { title: '答疑', subtitle: '解卡点', owner: 'Agent 助教团 × 石雄真人陪学', desc: '具体词句先拆解，再把仍未理解的部分整理成问题带入讨论。',
+  { title: '答疑', subtitle: '解卡点', owner: 'Agent 助教团 × 半知创始人真人陪学', desc: '具体词句先拆解，再把仍未理解的部分整理成问题带入讨论。',
     task: '“a space in which to choose” 怎么理解？哪部分修饰哪部分？', output: '留下一张问题卡',
     prompt: '请用中文帮我拆解 a space in which to choose。先标出中心词与修饰关系，给出两个简单例句，再用一道小题检查我是否理解。' },
-  { title: '社群', subtitle: '听见别人', owner: '同伴交流 × 石雄真人陪学', desc: '把自己的理解讲出来，也听听别人怎样读同一段文字。',
+  { title: '社群', subtitle: '听见别人', owner: '同伴交流 × 半知创始人真人陪学', desc: '把自己的理解讲出来，也听听别人怎样读同一段文字。',
     task: '选一句你认同或有疑问的话，补上理由，向同伴提一个问题。', output: '留下一次有内容的交流',
     prompt: '我想把阅读感受整理成社群讨论发言。请依次问我：我选了哪句话、为什么、它让我想到什么、我想问同伴什么。最后帮我整理成四句话。' },
   { title: '复盘', subtitle: '再回看', owner: 'Agent 助教团 × 半知精读教研团队', desc: '回看 D1、D3、D7 的记录，找到记住了什么、哪里还需要再练。',
@@ -41,7 +41,7 @@ export function CampHero() {
       <span className="house-eyebrow"><Feather size={14}/> 精读手账馆 · 半知精读陪学</span>
       <h1>60 天，把「看懂」<br/>练成<span>「说出来」。</span></h1>
       <p className="camp-v2-lead">一篇内容，一本精读手账，一次自己的表达。<br/>带读 · 打卡 · 答疑 · 社群，把阅读落到每天。</p>
-      <div className="camp-v2-teamline"><strong>石雄真人陪学</strong><span>×</span><strong>Agent 助教团</strong><span>×</span><strong>半知精读教研团队</strong></div>
+      <div className="camp-v2-teamline"><strong>半知创始人真人陪学</strong><span>×</span><strong>Agent 助教团</strong><span>×</span><strong>半知精读教研团队</strong></div>
       <div className="house-actions"><button className="house-button dark" onClick={() => jumpTo('camp-interest')}>选择我的陪学主题 <ArrowRight size={16}/></button><button className="house-text-link" onClick={() => jumpTo('camp-support')}>看看谁来陪、怎么陪 <ArrowDown size={15}/></button></div>
       <p className="camp-v2-status">60 天 · 每主题规划 60 篇 · ¥699 / 主题方案</p>
       <small className="house-plan-note">陪学服务筹备中 · 开营时间、服务排期与 Agent 使用方式将在报名开放时公布</small>
@@ -55,7 +55,7 @@ export function CampHero() {
         <div className="camp-v2-paper-checks"><span><Check size={12}/>读懂一句</span><span><Check size={12}/>写下联想</span><span><Check size={12}/>复述一次</span></div>
         <small>READ · THINK · WRITE · RETELL</small>
       </div>
-      <div className="camp-v2-margin"><div><span>教研团队</span><p>选材、译注、设计练习</p></div><div><span>Agent 助教团</span><p>拆词句、练表达、做复习</p></div><div><span>石雄</span><p>真人带读与阶段陪伴</p></div></div>
+      <div className="camp-v2-margin"><div><span>教研团队</span><p>选材、译注、设计练习</p></div><div><span>Agent 助教团</span><p>拆词句、练表达、做复习</p></div><div><span>半知创始人</span><p>真人带读与阶段陪伴</p></div></div>
       <span className="camp-v2-desk-foot">一份手账，把陪学串起来。</span>
     </div>
     <div className="camp-v2-measures">{[['60','天','持续精读周期'],['60','篇','每主题内容规划'],['3','方','真人 × Agent × 教研'],['3','分钟','TED 主题结营复述目标']].map(([number,unit,label]) => <div key={label}><strong>{number}<small>{unit}</small></strong><span>{label}</span></div>)}</div>

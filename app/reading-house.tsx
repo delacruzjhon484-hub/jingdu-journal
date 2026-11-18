@@ -29,7 +29,7 @@ export default function ReadingHouse({ onRead, record, onChange }: { onRead: (id
         <article className="house-product camp">
           <div className="house-product-top"><span>02 / 陪学服务</span><Feather size={24}/></div><h3>陪学营</h3><p>围绕一个主题，按节奏一起精读。<br/>带读 · 打卡 · 答疑 · 社群。</p>
           <div className="house-camp-facts"><strong>60<small>天</small></strong><span className="house-camp-price">¥699<small>陪学方案</small></span></div>
-          <p className="house-camp-team">石雄真人陪学 × Agent 助教团<br/>半知精读教研团队</p>
+          <p className="house-camp-team">半知创始人真人陪学 × Agent 助教团<br/>半知精读教研团队</p>
           <p className="house-camp-plan">TED · 外刊 · 名著节选，每个主题规划 60 篇。</p>
           <a className="house-button light" href="#/camp">了解陪学营 <ArrowUpRight size={16}/></a><small className="house-plan-note">方案筹备中 · 开营日期待公布</small>
         </article>
@@ -46,6 +46,6 @@ export default function ReadingHouse({ onRead, record, onChange }: { onRead: (id
       <ol>{[['读','带着问题读一遍'],['拆','拆词句，也拆观点'],['写','写下复述与联想'],['用','做一个小练习']].map(([word, line], index) => <li key={word}><span>0{index + 1}</span><strong>{word}</strong><p>{line}</p></li>)}</ol>
     </section>
 
-    <section className="house-founder house-wrap"><div className="house-founder-monogram" aria-hidden="true">石</div><div><span className="house-eyebrow">FOUNDER / 创始人</span><h2>石雄</h2><p>精读手账馆，由石雄创立。<br/>以精读手账为核心产品，连接自主阅读与持续陪学。</p></div><a href="#/camp" className="house-text-link">从一次陪学开始 <ArrowRight size={16}/></a></section>
+    <section className="house-founder house-wrap"><div className="house-founder-monogram" aria-hidden="true">知</div><div><span className="house-eyebrow">FOUNDER / 创始人</span><h2>半知创始人</h2><p>精读手账馆，由半知创始人发起。<br/>以精读手账为核心产品，连接自主阅读与持续陪学。</p></div><a href="#/camp" className="house-text-link">从一次陪学开始 <ArrowRight size={16}/></a></section>
   </div>;
 }
