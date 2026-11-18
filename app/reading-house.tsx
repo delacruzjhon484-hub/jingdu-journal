@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Feather, Layers3 } from 'lucide-react';
-import { journals } from './data';
+import { JournalSample, EditorialShelf } from './journal-experience';
+import type { LearningRecord } from './reading-records';
 import { learningGoals } from './reading-house-data';
 import SkillHome from './skill-home';
 
-export default function ReadingHouse({ onRead }: { onRead: (id: string) => void }) {
+export default function ReadingHouse({ onRead, record, onChange }: { onRead: (id: string) => void; record: LearningRecord; onChange: (value: { note: string; done: boolean }) => void }) {
   const [goal, setGoal] = useState<typeof learningGoals[number]>(learningGoals[0]);
   return <div className="reading-house">
-    <SkillHome onRead={onRead}/>
+    <SkillHome onRead={onRead}><JournalSample record={record} onChange={onChange} onRead={onRead}/></SkillHome>
 
     <section className="house-goals house-wrap" aria-labelledby="goals-title">
       <div className="house-section-top"><div><span className="house-eyebrow">START WITH YOUR GOAL</span><h2 id="goals-title">你想从阅读里，得到什么？</h2></div><span className="house-section-note">选一个目标，找第一本手账。</span></div>
@@ -35,15 +36,8 @@ export default function ReadingHouse({ onRead }: { onRead: (id: string) => void 
       </div>
     </section>
 
-    <section className="house-picks house-wrap" aria-labelledby="picks-title">
-      <div className="house-section-top"><div><span className="house-eyebrow">OPEN A JOURNAL</span><h2 id="picks-title">先用一本，感受精读。</h2></div><a className="house-text-link" href="#/cinema">全部手账 <ArrowUpRight size={15}/></a></div>
-      <div className="house-pick-grid">{['small-attention', 'listen-for-ideas', 'book-into-life'].map((id, index) => {
-        const journal = journals.find(item => item.id === id)!;
-        return <button className="house-pick" key={id} onClick={() => onRead(id)} style={{ '--pick-paper': journal.color, '--pick-ink': journal.accent } as CSSProperties}>
-          <div className="house-pick-cover"><span>精读手账馆 <b>0{index + 1}</b></span><div className="house-pick-symbol" aria-hidden="true">{['Aa', '“ ”', 'Bb'][index]}</div><h3>{journal.title}</h3><small>{journal.en}</small></div>
-          <div className="house-pick-caption"><div><strong>{journal.category}</strong><small>{journal.duration} · 原创体验</small></div><ArrowUpRight size={19}/></div>
-        </button>;
-      })}</div>
+    <EditorialShelf onRead={onRead}/>
+    <section className="house-wrap">
       <div className="house-board-link"><Layers3 size={20}/><div><strong>已经有具体想做的事？</strong><p>从备考、旅行到写作，在 18 份场景清单里找手账。</p></div><a href="#/board" className="house-text-link">打开场景白板 <ArrowUpRight size={16}/></a></div>
     </section>
 

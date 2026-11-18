@@ -1,11 +1,12 @@
 'use client';
-
 import { siteFetch as fetch } from './pages-runtime';
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ArrowUpRight, ArrowRight, ArrowLeft, Check, Plus, X, BookOpen, Bookmark, Download, ChevronDown, Copy, CheckCheck, Menu, PenLine, Headphones, Layers3, Sparkles, Clock3, ShoppingBag, House, LibraryBig, UsersRound, NotebookPen } from 'lucide-react';
 import { journals, lessons, clubTasks, type Journal } from './data';
 import SceneBoard from './scene-board';
+import FloatingSidebar from './floating-sidebar';
+import { LearningSnapshot } from './journal-experience';
 import ReadingHouse from './reading-house';
 import ReadingCamp from './reading-camp';
 import BanzhiCommunity from './banzhi-community';
@@ -89,7 +90,7 @@ export default function Home() {
   }, []);
   useEffect(()=>{ try { const raw = localStorage.getItem(KEY); if (raw) { const parsed = JSON.parse(raw); const merged = { ...emptyState }; if (parsed && typeof parsed === 'object') { merged.records = Object.fromEntries(Object.entries(parsed.records || {}).filter(([id,v])=>journals.some(j=>j.id===id)&&v&&typeof v==='object'&&typeof (v as {note:unknown}).note==='string'&&typeof (v as {done:unknown}).done==='boolean')) as LearningRecords; merged.outputs = Object.fromEntries(Object.keys(savedExerciseTitles).flatMap(id => typeof parsed.outputs?.[id] === 'string' && parsed.outputs[id].trim() ? [[id, parsed.outputs[id]]] : [])); merged.shortlist = Array.isArray(parsed.shortlist) ? [...new Set<string>(parsed.shortlist.filter((id:unknown)=>journals.some(j=>j.id===id)))] : []; merged.plan = typeof parsed.plan==='string' ? parsed.plan : ''; for (const field of ['lessonNotes','clubNotes'] as const) { merged[field] = emptyState[field].map((v,i)=>typeof parsed[field]?.[i]==='string' ? parsed[field][i] : v); } merged.completedLessons = Array.isArray(parsed.completedLessons) ? parsed.completedLessons.filter((n:unknown)=>Number.isInteger(n)&&Number(n)>=0&&Number(n)<4) : []; merged.completedDays = Array.isArray(parsed.completedDays) ? parsed.completedDays.filter((n:unknown)=>Number.isInteger(n)&&Number(n)>=0&&Number(n)<7) : []; setLocal(merged); } } } catch { toast('未能读取之前的笔记，可继续体验并下载保存'); } setLoaded(true); return ()=>{ if(toastTimer.current) clearTimeout(toastTimer.current); }; }, []);
   useEffect(()=>{ if (!loaded) return; try { localStorage.setItem(KEY, JSON.stringify(local)); } catch { toast('浏览器存储不可用，请及时下载笔记保存'); } }, [local, loaded]);
-  function setRecord(id: string, value: { note:string; done:boolean }) { setLocal(prev=>({ ...prev, records: { ...prev.records, [id]: { ...prev.records[id], ...value } } })); }
+  function setRecord(id: string, value: { note:string; done:boolean }) { setLocal(prev=>({ ...prev, records: { ...prev.records, [id]: { ...prev.records[id], visitedAt: prev.records[id]?.visitedAt ?? Date.now(), ...value } } })); }
   function setReaderId(id: string | null) {
     setOpenReaderId(id);
     if (!id) return;
@@ -135,17 +136,10 @@ export default function Home() {
   const noted = recent.filter(journal => local.records[journal.id].note.trim());
   return <>
     <span className="site-version" aria-label="网站版本 1.0">1.0</span>
-    <header className="site-header house-sidebar" onKeyDown={e => { if (e.key === 'Escape') setMobileNav(false); }}><div className="header-inner"><Logo/>
-      <button className="icon-button mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="切换导航菜单" aria-expanded={mobileNav} aria-controls="house-primary-nav">{mobileNav ? <X size={22}/> : <Menu size={22}/>}</button>
-      {mobileNav && <button className="house-nav-scrim" aria-label="关闭导航菜单" tabIndex={-1} onClick={() => setMobileNav(false)}/>}
-      <nav id="house-primary-nav" aria-label="主导航" className={mobileNav ? 'nav open' : 'nav'}>
-        {navItems.map(([href, label], i) => { const Icon = navIcons[i]; const active = route === href || (href === '/camp' && route.startsWith('/camp/')) || (href === '/cinema' && (route.startsWith('/journal/') || route.startsWith('/cinema/'))); return <a key={href} href={`#${href}`} onClick={() => setMobileNav(false)} aria-current={active ? 'page' : undefined}><Icon size={19} strokeWidth={1.6}/><span>{label}</span></a>; })}
-      </nav>
-      <div className="house-sidebar-note"><span>READ DEEPLY.</span><p>读一篇读懂，<br/>把实力存下。</p><small>精读手账 · 陪学营</small></div>
-    </div></header>
+    <FloatingSidebar route={route}/>
     <div className="site-content"><main>
-    {route === '/' && <ReadingHouse onRead={setReaderId}/>}
-    {route === '/community' && <BanzhiCommunity/>}
+    {route === '/' && <ReadingHouse onRead={setReaderId} record={record('small-attention')} onChange={value => setRecord('small-attention', value)}/>}
+    {route === '/community' && <BanzhiCommunity onRead={setReaderId} onCreateList={openList}/>}
     {(route === '/camp' || route.startsWith('/camp/')) && <ReadingCamp themeId={route.split('/')[2] ?? 'ted'} onRead={setReaderId}/>}
     {route === '/board' && <SceneBoard records={local.records} onRead={setReaderId} onCreateList={openList} reading={Boolean(readerId || createDraft)}/>}
     {(route === '/cinema' || route === '/cinema/upload') && <JournalCinema onRead={setReaderId} lists={lists} initialUpload={route === '/cinema/upload'}/>}
@@ -169,6 +163,7 @@ export default function Home() {
     {route==='/club' && <div className="wrap page-space"><div className="club-page-hero"><div><span className="eyebrow">SEVEN-DAY PRACTICE</span><h1>七天英语精读练习</h1><p>一篇短文，几次追问，一份有自己笔迹的手账。<br/>从每天 15–20 分钟的小练习开始。</p><button className="btn btn-dark" onClick={()=>setReaderId(journals[0].id)}>打开本周原创短文 <BookOpen size={17}/></button><span className="small-copy muted">自定进度 · 七个练习</span></div><div className="club-paper"><span className="hand-note">a little every day.</span><h2>读 · 说 · 写 · 用</h2><p>每次多一点自己的理解。<br/>也多留一个值得继续追问的问题。</p><div>{[BookOpen,Headphones,PenLine,CheckCheck].map((Icon,i)=><span key={i}><Icon size={26}/></span>)}</div></div></div><div className="section-heading"><div><span className="eyebrow">YOUR FIRST SEVEN DAYS</span><h2>先陪自己读完这一周。</h2></div><span className="muted">{local.completedDays.length} / 7 天完成</span></div><div className="day-picker">{clubTasks.map((t,i)=><button key={t} className={clubDay===i?'active':''} onClick={()=>setClubDay(i)} aria-pressed={clubDay===i}><small>DAY</small><b>{String(i+1).padStart(2,'0')}</b>{local.completedDays.includes(i)&&<Check size={15}/>}</button>)}</div><div className="club-task"><div><span className="eyebrow">DAY {String(clubDay+1).padStart(2,'0')} / YOUR LITTLE PRACTICE</span><h2>{clubTasks[clubDay]}</h2><p>围绕《把注意力，还给自己》完成今天的练习。<br/>完成情况与内容只保存在你当前的浏览器中。</p><button className="text-button" onClick={()=>setReaderId(journals[0].id)}>回看短文 <ArrowUpRight size={16}/></button></div><div><label className="notes-label" htmlFor="club-note">今天留下一点什么？</label><textarea id="club-note" rows={5} value={local.clubNotes[clubDay]} onChange={e=>setLocal(prev=>({...prev,clubNotes:prev.clubNotes.map((v,i)=>i===clubDay?e.target.value:v)}))} placeholder="一句复述、一个例句，或一个还没想明白的问题……"/><button className="btn btn-dark" onClick={()=>setLocal(prev=>({...prev,completedDays:prev.completedDays.includes(clubDay)?prev.completedDays.filter(v=>v!==clubDay):[...prev.completedDays,clubDay]}))}>{local.completedDays.includes(clubDay)?<CheckCheck size={17}/>:<Check size={17}/>} {local.completedDays.includes(clubDay)?'已完成今天的练习':'完成今天的练习'}</button></div></div></div>}
     {route === '/shelf' && <div className="wrap page-space personal-shelf">
       <div className="page-heading"><span className="eyebrow">YOUR JOURNAL SHELF</span><h1>我的手账</h1><p>清单、阅读进度和笔记仅保存在当前浏览器。</p></div>
+      <LearningSnapshot records={local.records}/>
       <section aria-labelledby="continue-title"><h2 id="continue-title" className="shelf-title">继续读</h2>
         {recent.length ? recent.map(journal => <div className="shelf-row" key={journal.id}><AppIcon code={journal.code} color={journal.accent}/><div>
           <h3>{journal.title.replace('\n','')}</h3><p>{record(journal.id).done ? '已完成精读' : '读过'}{record(journal.id).note.trim() && ' · 已有笔记'}</p></div>
@@ -177,8 +172,8 @@ export default function Home() {
       </section>
       <BoardLists key={selectedList} initialId={selectedList} listsState={lists} onRead={setReaderId}/>
       {migrationError && local.shortlist.length > 0 && <p className="shelf-empty">还有 {local.shortlist.length} 本旧收藏待合并。<button className="text-button" onClick={importShortlist}>重试合并到「想读」</button></p>}
-      {!lists.feed?.canEdit && local.shortlist.length > 0 && <p className="shelf-empty">当前浏览器有 {local.shortlist.length} 本旧收藏，可合并到当前浏览器的「想读」。</p>}
-      <section className="shelf-notes" aria-labelledby="notes-title"><h2 id="notes-title" className="shelf-title">我的笔记</h2>
+      {!lists.feed?.canEdit && local.shortlist.length > 0 && <p className="shelf-empty">当前浏览器有 {local.shortlist.length} 本旧收藏，登录后会合并到「想读」。</p>}
+      <section className="shelf-notes" aria-labelledby="notes-title"><h2 id="notes-title" className="shelf-title">我的学习成果</h2>
         {noted.map(journal => <article className="shelf-note" key={journal.id}><h3>{journal.title.replace('\n','')}</h3><p>{record(journal.id).note}</p>
           <div><button className="text-button" onClick={() => setReaderId(journal.id)}>打开手账 <ArrowUpRight size={14}/></button>
           <button className="text-button" onClick={() => downloadJournal(journal, record(journal.id).note)}>下载笔记 <Download size={14}/></button></div></article>)}
@@ -195,7 +190,7 @@ export default function Home() {
       <div><h3>精读与陪学</h3><a href="#/cinema">精读手账</a><a href="#/camp">陪学营</a><a href="#/board">场景白板</a></div>
       <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知搭子</a><a href="#/method">精读方法</a><span className="footer-founder">创始人 · 石雄</span></div>
       <div className="footer-note"><span className="hand-note">保持好奇，<br/>慢慢成为自己的作者。</span><small>READ DEEPLY. KEEP SOMETHING.</small></div>
-    </div><div className="wrap pages-edition-note">公开体验站 · 笔记与清单保存在当前浏览器 · 搭子入驻与 PDF 投稿在<a href="https://everything-journal.delacruzjhon484.chatgpt.site/" target="_blank" rel="noopener noreferrer">在线版</a>使用</div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>创始人 · 石雄</span></div></footer></div>
+    </div><div className="wrap pages-edition-note">公开体验版 · 清单与学习记录保存在当前浏览器。<a href="https://everything-journal.delacruzjhon484.chatgpt.site/">前往在线版使用投稿与搭子名片 <ArrowUpRight size={12}/></a></div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>创始人 · 石雄</span></div></footer></div>
     {readerJournal && <Modal title="精读工作台" wide onClose={() => setReaderId(null)}>
       <Reader key={readerJournal.id} journal={readerJournal} record={record(readerJournal.id)} update={value => setRecord(readerJournal.id, value)} toast={toast} lists={lists} onClose={() => setReaderId(null)}/>
     </Modal>}

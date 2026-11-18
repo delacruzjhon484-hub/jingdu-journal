@@ -1,11 +1,11 @@
 'use client';
-
 import { siteFetch as fetch } from './pages-runtime';
 
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Clapperboard, FileUp, Play, Plus, Search, X } from 'lucide-react';
 import { cinemaFeed, cinemaThemes, cinemaUploadLimit, themeForJournal, themeJournals, type CinemaSubmission } from './cinema-data';
 import { categories, journals, type Journal } from './data';
+import { EditorialShelf } from './journal-experience';
 import { boardScenes } from './scene-board-data';
 import { AddToList, type BoardListFeedState } from './board-lists';
 
@@ -75,7 +75,7 @@ function FilmRow({ title, detail, films, onOpen, grid = false }: { title: string
     <div className={grid ? "cinema-rail cinema-results" : "cinema-rail"} ref={rail} onScroll={updateEdges}>
       {films.map(film => <button key={film.id} className="cinema-film" onClick={() => onOpen(film)} aria-label={`打开《${film.title.replace('\n', '')}》`}>
         <div className="cinema-film-image"><Poster film={film}/><span className="cinema-film-play"><Play size={16} fill="currentColor"/></span></div>
-        <strong>{film.title.replace('\n', '')}</strong><small>{film.label} · {film.caption}</small>
+        <strong>{film.title.replace('\n', '')}</strong><small>{film.label} · {film.caption}</small>{!film.submission && <><span className="cinema-learning-level">{journals.find(j => j.id === film.id)?.level}</span><p className="cinema-learning-output">{journals.find(j => j.id === film.id)?.outcome}</p></>}
       </button>)}
     </div>
   </section>;
@@ -207,6 +207,7 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
           <span className="cinema-stage-number">{String(featureFilm.number + 1).padStart(2, '0')}<small>/ 本期推荐</small></span>
         </div>
       </section>
+      {!query && !category && filter === 'all' && <EditorialShelf onRead={onRead} compact/>}
       <div className="cinema-find">
         <label><Search size={18}/><input type="search" aria-label="搜索手账" placeholder="搜手账名称、场景或作者" value={query} onChange={event => setQuery(event.target.value)}/></label>
         <select aria-label="手账品类" value={category} onChange={event => { setCategory(event.target.value); setFilter('all'); }}>
@@ -236,7 +237,7 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
     {modal && <dialog ref={dialog} className="cinema-dialog" aria-label={modal === 'upload' ? '上传手账' : modal.title} onCancel={event => { event.preventDefault(); if (!busy) setModal(null); }}>
       <button className="cinema-close" aria-label="关闭" disabled={busy} onClick={() => setModal(null)}><X size={21}/></button>
       {modal === 'upload' ? <form className="cinema-form" onSubmit={upload}>
-        <span className="cinema-kicker">观众投稿</span><h2>上传你的手账</h2><p>公开体验站不接收文件上传。请前往在线版，完成 PDF 手账的署名投稿与展示。</p>
+        <span className="cinema-kicker">观众投稿</span><h2>上传你的手账</h2><p>选一个清单，写几句简介。PDF 会随海报一起加入当前站点的影院。</p>
         <label>手账名称<input name="title" maxLength={60} placeholder="给你的手账起个名字" required/></label>
         <div className="cinema-form-columns"><label>主题<select name="theme" defaultValue={cinemaThemes.some(theme => theme.id === filter) ? filter : 'life'}>{cinemaThemes.map(theme => <option key={theme.id} value={theme.id}>{theme.name}</option>)}</select></label><label>署名 <small>选填</small><input name="author" maxLength={30} placeholder="匿名作者"/></label></div>
         <label>简介<textarea name="summary" rows={3} maxLength={180} placeholder="这本手账可以帮读者做什么？" required/></label>

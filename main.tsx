@@ -8,4 +8,7 @@ import './app/camp-experience.css';
 import './app/site-shell.css';
 import './app/skill-community.css';
 import './app/journal-workshop.css';
+import './app/floating-sidebar.css';
+import './app/reading-experience.css';
 createRoot(document.getElementById('root')!).render(<Home/>);
+
