@@ -17,7 +17,7 @@ import { savedExerciseTitles, type LearningRecords } from './reading-records';
 type LocalState = { records: LearningRecords; outputs: Record<string, string>; lessonNotes: string[]; completedLessons: number[]; clubNotes: string[]; completedDays: number[]; shortlist: string[]; plan: string };
 const emptyState: LocalState = { records: {}, outputs: {}, lessonNotes: ['', '', '', ''], completedLessons: [], clubNotes: Array(7).fill(''), completedDays: [], shortlist: [], plan: '' };
 const KEY = 'everything-journal-v1';
-const navItems = [['/', '首页'], ['/cinema', '精读手账'], ['/camp', '陪学营'], ['/community', '半知社区'], ['/shelf', '我的手账']];
+const navItems = [['/', '首页'], ['/cinema', '精读手账'], ['/camp', '陪学营'], ['/community', '半知搭子'], ['/shelf', '我的手账']];
 const navIcons = [House, LibraryBig, UsersRound, Sparkles, NotebookPen];
 function escapeHtml(value: string) { return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!)); }
 function downloadJournal(journal: Journal, note: string) {
@@ -193,9 +193,9 @@ export default function Home() {
     <footer className="site-footer"><div className="wrap footer-main">
       <div><Logo small/><p>读一篇读懂，把实力存下。<br/>精读手账 · 陪学营</p></div>
       <div><h3>精读与陪学</h3><a href="#/cinema">精读手账</a><a href="#/camp">陪学营</a><a href="#/board">场景白板</a></div>
-      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知社区</a><a href="#/method">精读方法</a><span className="footer-founder">创始人 · 石雄</span></div>
+      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知搭子</a><a href="#/method">精读方法</a><span className="footer-founder">创始人 · 石雄</span></div>
       <div className="footer-note"><span className="hand-note">保持好奇，<br/>慢慢成为自己的作者。</span><small>READ DEEPLY. KEEP SOMETHING.</small></div>
-    </div><div className="wrap pages-edition-note">公开体验站 · 笔记与清单保存在当前浏览器 · 社区入驻与 PDF 投稿在<a href="https://everything-journal.delacruzjhon484.chatgpt.site/" target="_blank" rel="noopener noreferrer">在线版</a>使用</div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>创始人 · 石雄</span></div></footer></div>
+    </div><div className="wrap pages-edition-note">公开体验站 · 笔记与清单保存在当前浏览器 · 搭子入驻与 PDF 投稿在<a href="https://everything-journal.delacruzjhon484.chatgpt.site/" target="_blank" rel="noopener noreferrer">在线版</a>使用</div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>创始人 · 石雄</span></div></footer></div>
     {readerJournal && <Modal title="精读工作台" wide onClose={() => setReaderId(null)}>
       <Reader key={readerJournal.id} journal={readerJournal} record={record(readerJournal.id)} update={value => setRecord(readerJournal.id, value)} toast={toast} lists={lists} onClose={() => setReaderId(null)}/>
     </Modal>}
