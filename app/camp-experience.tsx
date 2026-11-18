@@ -44,7 +44,7 @@ export function CampHero() {
       <div className="camp-v2-teamline"><strong>半知创始人真人陪学</strong><span>×</span><strong>Agent 助教团</strong><span>×</span><strong>半知精读教研团队</strong></div>
       <div className="house-actions"><button className="house-button dark" onClick={() => jumpTo('camp-interest')}>选择我的陪学主题 <ArrowRight size={16}/></button><button className="house-text-link" onClick={() => jumpTo('camp-support')}>看看谁来陪、怎么陪 <ArrowDown size={15}/></button></div>
       <p className="camp-v2-status">60 天 · 每主题规划 60 篇 · ¥699 / 主题方案</p>
-      <small className="house-plan-note">陪学服务筹备中 · 开营时间、服务排期与 Agent 使用方式将在报名开放时公布</small>
+      <small className="house-plan-note">按主题排期 · 选定主题后查看报名安排</small>
     </div>
     <div className="camp-v2-desk" aria-label="精读手账和三方陪学分工示意">
       <span className="camp-v2-desk-top">THE DAILY READING JOURNAL <span>01 / 60</span></span>

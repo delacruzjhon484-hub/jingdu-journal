@@ -1,17 +1,20 @@
 'use client';
-import { siteFetch as fetch } from './pages-runtime';
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ArrowUpRight, ArrowRight, ArrowLeft, Check, Plus, X, BookOpen, Bookmark, Download, ChevronDown, Copy, CheckCheck, Menu, PenLine, Headphones, Layers3, Sparkles, Clock3, ShoppingBag, House, LibraryBig, UsersRound, NotebookPen } from 'lucide-react';
 import { journals, lessons, clubTasks, type Journal } from './data';
 import SceneBoard from './scene-board';
 import { useJournalProduct, PurchasePanel, JournalPurchase } from './journal-purchase';
+import { onlineSite,siteFetch as fetch } from './pages-runtime';
+
+
 import { PdfJournalReader } from './pdf-journal-reader';
 import FloatingSidebar from './floating-sidebar';
 import { LearningSnapshot } from './journal-experience';
 import ReadingHouse from './reading-house';
 import ReadingCamp from './reading-camp';
-import BanzhiCommunity from './banzhi-community';
+import { describeBook } from './journal-tags';
+import JournalExhibition from './journal-exhibition';
 import JournalCinema from './journal-cinema';
 import BoardLists, { AddToList, ListEditor, useBoardListFeed, type BoardListFeedState } from './board-lists';
 import { boardListEndpoint, wantToReadId, type BoardListDraft, type PersonalBoardList } from './board-lists-data';
@@ -20,7 +23,7 @@ import { savedExerciseTitles, type LearningRecords } from './reading-records';
 type LocalState = { records: LearningRecords; outputs: Record<string, string>; lessonNotes: string[]; completedLessons: number[]; clubNotes: string[]; completedDays: number[]; shortlist: string[]; plan: string };
 const emptyState: LocalState = { records: {}, outputs: {}, lessonNotes: ['', '', '', ''], completedLessons: [], clubNotes: Array(7).fill(''), completedDays: [], shortlist: [], plan: '' };
 const KEY = 'everything-journal-v1';
-const navItems = [['/', '首页'], ['/cinema', '精读手账'], ['/camp', '陪学营'], ['/community', '半知搭子'], ['/shelf', '我的手账']];
+const navItems = [['/', '首页'], ['/cinema', '精读手账'], ['/camp', '陪学营'], ['/exhibition', '手帐展'], ['/shelf', '我的手账']];
 const navIcons = [House, LibraryBig, UsersRound, Sparkles, NotebookPen];
 function escapeHtml(value: string) { return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!)); }
 function downloadNotes(journal: Journal, note: string) {
@@ -82,10 +85,16 @@ export default function Home() {
   useEffect(() => {
     function updateRoute() {
       let next = window.location.hash.slice(1) || '/';
+      if (next === '/community') { next = '/exhibition'; window.history.replaceState(window.history.state, '', '#/exhibition'); }
       if (next === '/network' || next === '/store' || next === '/plans') {
         next = next === '/store' ? '/cinema' : next === '/plans' ? '/camp' : '/board';
         window.history.replaceState(window.history.state, '', `#${next}`);
       }
+      if (next === '/orders' || next === '/admin/payments') {
+        window.location.replace(onlineSite+'#'+next);
+        return;
+      }
+      setOpenReaderId(null);
       setRoute(next);
       setMobileNav(false);
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -144,8 +153,11 @@ export default function Home() {
     <span className="site-version" aria-label="网站版本 1.0">1.0</span>
     <FloatingSidebar route={route}/>
     <div className="site-content"><main>
+
+
+
     {route === '/' && <ReadingHouse onRead={setReaderId} record={record('small-attention')} onChange={value => setRecord('small-attention', value)}/>}
-    {route === '/community' && <BanzhiCommunity onRead={setReaderId} onCreateList={openList}/>}
+    {(route === '/exhibition' || route.startsWith('/exhibition?')) && <JournalExhibition/>}
     {(route === '/camp' || route.startsWith('/camp/')) && <ReadingCamp themeId={route.split('/')[2] ?? 'ted'} onRead={setReaderId}/>}
     {route === '/board' && <SceneBoard records={local.records} onRead={setReaderId} onCreateList={openList} reading={Boolean(readerId || createDraft)}/>}
     {(route === '/cinema' || route === '/cinema/upload') && <JournalCinema onRead={setReaderId} lists={lists} initialUpload={route === '/cinema/upload'}/>}
@@ -155,6 +167,7 @@ export default function Home() {
         <div className="product-meta"><span><i style={{background:activeJournal.accent}}/>{activeJournal.category}</span><span>原创手账</span></div>
         <h1>{activeJournal.title.replace('\n','')}</h1><p className="detail-desc">{activeJournal.desc}</p>
         <div className="detail-facts"><span><Clock3 size={17}/>{activeJournal.duration}</span><span><BookOpen size={17}/>{activeJournal.level}</span><span><Download size={17}/>网页 · 可打印文件</span></div>
+        <div className="neb-tags" aria-label="手账标签">{describeBook(activeJournal).tags.map(tag=><a key={tag} href={`#/exhibition?tag=${encodeURIComponent(tag)}`}>{tag}</a>)}</div>
         <div className="detail-outcome"><small>读完，你会带走</small><p>{activeJournal.outcome}</p></div>
         <div className="detail-buttons"><button className="btn btn-dark" onClick={() => setReaderId(activeJournal.id)}>免费试读 <ArrowUpRight size={17}/></button><span className="detail-price">¥12.9 <small>/ 本</small></span></div><JournalPurchase id={activeJournal.id}/>
         <AddToList key={activeJournal.id} journalId={activeJournal.id} lists={lists}/>
@@ -168,7 +181,8 @@ export default function Home() {
     {route==='/method' && <div className="wrap page-space"><div className="page-heading"><span className="eyebrow">THE CLOSE READING SKILL</span><h1>AI 陪你读，<span className="serif">理解归你自己。</span></h1><p>一个可以带到外刊、报告、书籍和工作里的方法。四步，做完第一份精读手账。</p></div><div className="lesson-layout"><aside className="lesson-nav">{lessons.map((l,i)=><button key={l.label} className={activeLesson===i?'active':''} onClick={()=>setActiveLesson(i)}><span>{local.completedLessons.includes(i)?<Check size={15}/>:String(i+1).padStart(2,'0')}</span><div><small>{l.label}</small><b>{l.title}</b></div><ArrowUpRight size={16}/></button>)}<div className="lesson-progress"><span>已完成 {local.completedLessons.length} / 4 步</span><progress max={4} value={local.completedLessons.length}/><p>练习与进度保存在当前浏览器。</p></div></aside><article className="lesson-content"><span className="eyebrow">{lessons[activeLesson].label}</span><h2>{lessons[activeLesson].title}</h2><p className="lesson-detail">{lessons[activeLesson].detail}</p><div className="prompt-card"><div><span><Sparkles size={17}/>把这段话交给你的 AI 学习伙伴</span><button className="text-button" onClick={copyPrompt}><Copy size={15}/>复制</button></div><p>{lessons[activeLesson].prompt}</p></div><label htmlFor="lesson-note" className="notes-label"><PenLine size={17}/>先写下你的想法</label><textarea id="lesson-note" rows={5} placeholder={lessons[activeLesson].exercise} value={local.lessonNotes[activeLesson]} onChange={e=>setLocal(prev=>({...prev,lessonNotes:prev.lessonNotes.map((v,i)=>i===activeLesson?e.target.value:v)}))}/><div className="lesson-actions"><button className="btn btn-outline" onClick={()=>{setLocal(prev=>({...prev,completedLessons:prev.completedLessons.includes(activeLesson)?prev.completedLessons.filter(v=>v!==activeLesson):[...prev.completedLessons,activeLesson]}));}}>{local.completedLessons.includes(activeLesson)?<CheckCheck size={17}/>:<Check size={17}/>} {local.completedLessons.includes(activeLesson)?'这一步已完成':'完成这一步'}</button>{activeLesson<3?<button className="btn btn-dark" onClick={()=>setActiveLesson(activeLesson+1)}>下一步 <ArrowRight size={17}/></button>:<button className="btn btn-dark" onClick={()=>setReaderId(journals[0].id)}>拿一篇短文练练手 <ArrowUpRight size={17}/></button>}</div><div className="source-note"><b>从现有 AI 工具开始</b><p>本课提供方法、提示词和原创练习。将提示词与有权使用的材料带入你自己的 AI 工具即可练习，分享输出前复核事实与来源。</p></div></article></div><section className="principles"><div><h3>素材有出处</h3><p>记录作者、链接和许可。付费访问权限与再分发权限分别核验。</p></div><div><h3>理解有自己的话</h3><p>先复述再对照，把推断与原文提供的事实区分开。</p></div><div><h3>学习有下一步</h3><p>留下一次练习、一个行动或一个可在未来回看的问题。</p></div></section></div>}
     {route==='/club' && <div className="wrap page-space"><div className="club-page-hero"><div><span className="eyebrow">SEVEN-DAY PRACTICE</span><h1>七天英语精读练习</h1><p>一篇短文，几次追问，一份有自己笔迹的手账。<br/>从每天 15–20 分钟的小练习开始。</p><button className="btn btn-dark" onClick={()=>setReaderId(journals[0].id)}>打开本周原创短文 <BookOpen size={17}/></button><span className="small-copy muted">自定进度 · 七个练习</span></div><div className="club-paper"><span className="hand-note">a little every day.</span><h2>读 · 说 · 写 · 用</h2><p>每次多一点自己的理解。<br/>也多留一个值得继续追问的问题。</p><div>{[BookOpen,Headphones,PenLine,CheckCheck].map((Icon,i)=><span key={i}><Icon size={26}/></span>)}</div></div></div><div className="section-heading"><div><span className="eyebrow">YOUR FIRST SEVEN DAYS</span><h2>先陪自己读完这一周。</h2></div><span className="muted">{local.completedDays.length} / 7 天完成</span></div><div className="day-picker">{clubTasks.map((t,i)=><button key={t} className={clubDay===i?'active':''} onClick={()=>setClubDay(i)} aria-pressed={clubDay===i}><small>DAY</small><b>{String(i+1).padStart(2,'0')}</b>{local.completedDays.includes(i)&&<Check size={15}/>}</button>)}</div><div className="club-task"><div><span className="eyebrow">DAY {String(clubDay+1).padStart(2,'0')} / YOUR LITTLE PRACTICE</span><h2>{clubTasks[clubDay]}</h2><p>围绕《把注意力，还给自己》完成今天的练习。<br/>完成情况与内容只保存在你当前的浏览器中。</p><button className="text-button" onClick={()=>setReaderId(journals[0].id)}>回看短文 <ArrowUpRight size={16}/></button></div><div><label className="notes-label" htmlFor="club-note">今天留下一点什么？</label><textarea id="club-note" rows={5} value={local.clubNotes[clubDay]} onChange={e=>setLocal(prev=>({...prev,clubNotes:prev.clubNotes.map((v,i)=>i===clubDay?e.target.value:v)}))} placeholder="一句复述、一个例句，或一个还没想明白的问题……"/><button className="btn btn-dark" onClick={()=>setLocal(prev=>({...prev,completedDays:prev.completedDays.includes(clubDay)?prev.completedDays.filter(v=>v!==clubDay):[...prev.completedDays,clubDay]}))}>{local.completedDays.includes(clubDay)?<CheckCheck size={17}/>:<Check size={17}/>} {local.completedDays.includes(clubDay)?'已完成今天的练习':'完成今天的练习'}</button></div></div></div>}
     {route === '/shelf' && <div className="wrap page-space personal-shelf">
-      <div className="page-heading"><span className="eyebrow">YOUR JOURNAL SHELF</span><h1>我的手账</h1><p>清单、阅读进度和笔记仅保存在当前浏览器。</p></div>
+      <div className="page-heading"><span className="eyebrow">YOUR JOURNAL SHELF</span><h1>我的手账</h1><p>清单随账号保存。阅读进度和笔记保存在当前浏览器。</p></div>
+      <a className="shelf-practice" href={onlineSite+'#/orders'}><ShoppingBag size={19}/><div><strong>我的订单与已购手账</strong><small>查看人工核实进度，下载已购手账</small></div><ArrowUpRight size={16}/></a>
       <LearningSnapshot records={local.records}/>
       <section aria-labelledby="continue-title"><h2 id="continue-title" className="shelf-title">继续读</h2>
         {recent.length ? recent.map(journal => <div className="shelf-row" key={journal.id}><AppIcon code={journal.code} color={journal.accent}/><div>
@@ -186,17 +200,17 @@ export default function Home() {
         {Object.entries(local.outputs).map(([id, output]) => <article className="shelf-note" key={id}><h3>{savedExerciseTitles[id]}</h3><p>{output}</p></article>)}
         {!noted.length && !Object.keys(local.outputs).length && <p className="shelf-empty">在任意原创手账里写下一句，笔记就会出现在这里。</p>}
       </section>
-      <a className="shelf-practice" href="#/camp"><BookOpen size={19}/><div><strong>我的学习计划</strong><small>查看主题与学习目标</small></div><ArrowUpRight size={16}/></a>
+      <a className="shelf-practice" href="#/camp"><BookOpen size={19}/><div><strong>我的陪学意向</strong><small>查看主题与学习目标</small></div><ArrowUpRight size={16}/></a>
       <a className="shelf-practice" href="#/club"><BookOpen size={19}/><div><strong>七天英语精读练习</strong><small>{local.completedDays.length} / 7 天完成</small></div><ArrowUpRight size={16}/></a>
     </div>}
-    {!['/import','/','/board','/cinema','/cinema/upload','/community','/method','/club','/camp','/shelf'].includes(route) && !route.startsWith('/camp/') && !activeJournal && <div className="wrap empty-state page-space"><h1>这一页，还在路上。</h1><a href="#/" className="btn btn-dark">回到首页 <ArrowRight size={17}/></a></div>}
+    {!['/orders','/admin/payments','/import','/','/board','/cinema','/cinema/upload','/exhibition','/method','/club','/camp','/shelf'].includes(route) && !route.startsWith('/exhibition?') && !route.startsWith('/camp/') && !activeJournal && <div className="wrap empty-state page-space"><h1>这一页，还在路上。</h1><a href="#/" className="btn btn-dark">回到首页 <ArrowRight size={17}/></a></div>}
     </main>
     <footer className="site-footer"><div className="wrap footer-main">
       <div><Logo small/><p>读一篇读懂，把实力存下。<br/>精读手账 · 陪学营</p></div>
       <div><h3>精读与陪学</h3><a href="#/cinema">精读手账</a><a href="#/camp">陪学营</a><a href="#/board">场景白板</a></div>
-      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/community">半知搭子</a><a href="#/method">精读方法</a><span className="footer-founder">半知创始人</span></div>
+      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/exhibition">手帐展</a><a href="#/method">精读方法</a><a href="#/admin/payments">收款管理</a><span className="footer-founder">半知创始人</span></div>
       <div className="footer-note"><span className="hand-note">保持好奇，<br/>慢慢成为自己的作者。</span><small>READ DEEPLY. KEEP SOMETHING.</small></div>
-    </div><div className="wrap pages-edition-note">公开体验版 · 清单与学习记录保存在当前浏览器。<a href="https://everything-journal.delacruzjhon484.chatgpt.site/">前往在线版使用购买、投稿与搭子名片 <ArrowUpRight size={12}/></a></div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>半知创始人</span></div></footer></div>
+    </div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>半知创始人</span></div></footer></div>
     {readerJournal && <Modal title="精读手账 · 试读与已购阅读" wide onClose={() => setReaderId(null)}>
       <Reader key={readerJournal.id} journal={readerJournal} record={record(readerJournal.id)} update={value => setRecord(readerJournal.id, value)} toast={toast} lists={lists} onClose={() => setReaderId(null)}/>
     </Modal>}

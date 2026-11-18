@@ -274,7 +274,7 @@ export default function BoardLists({ listsState, onRead, initialId }: {
         {!active.bookIds.length && <p className="board-list-hint">这份清单还是空的。打开「编辑清单」就能加入手账。</p>}
       </div>
     </> : <div className="board-list-empty">
-      {error ? <p>{error} <button onClick={retry}>重试</button></p> : !feed ? <p>正在读取你的清单…</p> : <p>在这里管理当前浏览器保存的想读和自建清单。</p>}
+      {error ? <p>{error} <button onClick={retry}>重试</button></p> : !feed ? <p>正在读取你的清单…</p> : <p>登录后，可在这里管理想读和自建清单。</p>}
     </div>}
     {draft && <ListEditor draft={draft} editingId={editing?.id} feed={feed} loadError={error} retry={retry} onClose={close} onSaved={saved} onRemoved={removed}/>}
   </section>;

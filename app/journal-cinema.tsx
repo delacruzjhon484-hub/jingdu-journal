@@ -209,7 +209,7 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
           <span className="cinema-stage-number">{String(featureFilm.number + 1).padStart(2, '0')}<small>/ 本期推荐</small></span>
         </div>
       </section>
-      <div className="cinema-buy-steps"><span><b>01</b> 点击封面，免费试读</span><span><b>02</b> 单本购买 ¥12.9</span><span><b>03</b> 付费后下载，随时重读</span><small>当前可试读，购买暂未开放。</small></div>
+      <div className="cinema-buy-steps"><span><b>01</b> 点击封面，免费试读</span><span><b>02</b> 单本购买 ¥12.9</span><span><b>03</b> 人工核实后开通下载</span><small>人工确认 · 扫码付款后核实到账，具体处理时段见购买页。</small></div>
       {!query && !category && filter === 'all' && <EditorialShelf onRead={onRead} compact/>}
       <div className="cinema-find">
         <label><Search size={18}/><input type="search" aria-label="搜索手账" placeholder="搜手账名称、场景或作者" value={query} onChange={event => setQuery(event.target.value)}/></label>
@@ -241,10 +241,14 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
     {modal && <dialog ref={dialog} className="cinema-dialog" aria-label={modal === 'upload' ? '上传手账' : modal.title} onCancel={event => { event.preventDefault(); if (!busy) setModal(null); }}>
       <button className="cinema-close" aria-label="关闭" disabled={busy} onClick={() => setModal(null)}><X size={21}/></button>
       {modal === 'upload' ? <form className="cinema-form" onSubmit={upload}>
-        <span className="cinema-kicker">观众投稿</span><h2>上传你的手账</h2><p>公开体验站不接收文件上传。请前往在线版，完成 PDF 手账的署名投稿与展示。</p>
-        <p className="cinema-scope">文件的上传、署名和公开展示在在线版完成。</p>
+        <span className="cinema-kicker">观众投稿</span><h2>上传你的手账</h2><p>选一个清单，写几句简介。PDF 会随海报一起加入当前站点的影院。</p>
+        <label>手账名称<input name="title" maxLength={60} placeholder="给你的手账起个名字" required/></label>
+        <div className="cinema-form-columns"><label>主题<select name="theme" defaultValue={cinemaThemes.some(theme => theme.id === filter) ? filter : 'life'}>{cinemaThemes.map(theme => <option key={theme.id} value={theme.id}>{theme.name}</option>)}</select></label><label>署名 <small>选填</small><input name="author" maxLength={30} placeholder="匿名作者"/></label></div>
+        <label>简介<textarea name="summary" rows={3} maxLength={180} placeholder="这本手账可以帮读者做什么？" required/></label>
+        <label className="cinema-file"><span><FileUp size={19}/>选择 PDF <small>上限 12 MB</small></span><input name="file" type="file" accept="application/pdf,.pdf" required/></label>
+        <p className="cinema-scope">上传后，能访问当前站点的读者可以查看。</p>
         {error && <p className="cinema-error" role="alert">{error}</p>}
-        {access && !access.canUpload ? <a href={access.signInUrl} target="_top" className="cinema-btn cinema-play">前往在线版上传 <ArrowUpRight size={16}/></a>
+        {access && !access.canUpload ? <a href={access.signInUrl} target="_top" className="cinema-btn cinema-play">登录后上传 <ArrowUpRight size={16}/></a>
           : <button type="submit" className="cinema-btn cinema-play" disabled={busy || loading}>{busy ? '正在上传…' : '上传并加入手账馆'}</button>}
       </form> : <div className="cinema-detail">
         <Poster film={modal}/><div><span className="cinema-kicker">观众投稿</span><h2>{modal.title}</h2><p className="cinema-credit">{modal.submission!.author} · {cinemaThemes.find(theme => theme.id === modal.submission!.theme)?.name}</p><p>{modal.submission!.summary}</p>

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, type PointerEvent, type KeyboardEvent } from 'react';
 import { GripVertical, Minus, House, LibraryBig, UsersRound, Sparkles, NotebookPen, RotateCcw } from 'lucide-react';
-const items = [['/', '首页', House], ['/cinema', '精读手账', LibraryBig], ['/camp', '陪学营', UsersRound], ['/community', '半知搭子', Sparkles], ['/shelf', '我的手账', NotebookPen]] as const;
+const items = [['/', '首页', House], ['/cinema', '精读手账', LibraryBig], ['/camp', '陪学营', UsersRound], ['/exhibition', '手帐展', Sparkles], ['/shelf', '我的手账', NotebookPen]] as const;
 const key = 'jingdu-navigation-v1';
 type Position = { x: number; y: number; collapsed: boolean; floating: boolean };
 function bounds(p: Position): Position { return { ...p, x: Math.max(12, Math.min(p.x, Math.max(12, window.innerWidth - (p.collapsed ? 56 : 224) - 12))), y: Math.max(12, Math.min(p.y, Math.max(12, window.innerHeight - (p.collapsed ? 56 : Math.min(590,window.innerHeight-24)) - 12))) }; }
@@ -23,7 +23,7 @@ export default function FloatingSidebar({route}: {route:string}) {
     {position.collapsed ? <button ref={launcher} {...events} className="navigation-launcher" aria-label="展开导航（可拖拽移动）" aria-expanded={false} title="点击展开 · 拖动移动" onClick={()=>{if(suppressClick.current){suppressClick.current=false;return;}change(false);}}><img src="./banzhi-logo-transparent.png" alt="" width={38} height={38}/></button> : <>
       <div className="navigation-controls"><button ref={handle} {...events} className="navigation-drag-handle" aria-label="拖动导航；方向键移动，Home 键复位" title="拖动移动 · 方向键也可移动"><GripVertical size={16}/><span>拖动导航</span></button><button className="navigation-reset" aria-label="导航回到左上角" title="回到左上角" onClick={()=>setPosition(p=>bounds({...p,x:16,y:16,floating:false}))}><RotateCcw size={14}/></button><button className="navigation-minimize" onClick={()=>change(true)} aria-label="收起为最小图标" title="收起为最小图标"><Minus size={18}/></button></div>
       <a className="floating-brand" href="#/"><img src="./banzhi-logo-transparent.png" alt="半知" width={42} height={42}/><span>精读手账馆<small>JINGDU JOURNAL HOUSE</small></span></a>
-      <nav aria-label="主导航">{items.map(([href,label,Icon])=>{const active=route===href||(href==='/camp'&&route.startsWith('/camp/'))||(href==='/cinema'&&(route.startsWith('/cinema/')||route.startsWith('/journal/')));return <a href={`#${href}`} key={href} aria-current={active?'page':undefined} onClick={()=>{if(window.innerWidth<=900)change(true);}}><Icon size={19} strokeWidth={1.6}/><span>{label}</span></a>;})}</nav><div className="floating-nav-foot"><small>READ DEEPLY.</small><p>读一篇读懂，<br/>把实力存下。</p></div>
+      <nav aria-label="主导航">{items.map(([href,label,Icon])=>{const active=route===href||(href==='/camp'&&route.startsWith('/camp/'))||(href==='/cinema'&&(route.startsWith('/cinema/')||route.startsWith('/journal/')));return <a href={`#${href}`} key={href} aria-current={active?'page':undefined} onClick={()=>{if(window.innerWidth<=900)change(true);}}><Icon size={19} strokeWidth={1.6}/><span>{label}</span></a>;})}</nav><div className="floating-nav-foot"><small>READ DEEPLY.</small><p>把一篇读懂，<br/>把实力存下。</p></div>
     </>}
   </aside>;
 }
