@@ -1,0 +1,79 @@
+:root { --sidebar-width: 224px; }
+.house-sidebar.site-header { position: fixed; inset: 0 auto 0 0; width: var(--sidebar-width); height: 100dvh; border: 0; border-right: 1px solid var(--house-line); background: #f0eee7; z-index: 40; }
+.house-sidebar .header-inner { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; max-width: none; height: 100%; gap: 0; padding: 32px 18px 24px; overflow-y: auto; }
+.house-sidebar .brand { align-items: center; gap: 7px; padding-inline: 2px; }
+.house-sidebar .house-brand-logo { width: 46px; height: 46px; }
+.house-sidebar .brand > span:last-child { font-size: 16px; letter-spacing: .035em; }
+.house-sidebar .brand small { font-size: 6px; letter-spacing: .08em; }
+.house-sidebar .nav { position: static; display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: 100%; height: auto; margin: 40px 0 0; padding: 0; background: none; border: 0; box-shadow: none; }
+.house-sidebar .nav a { display: flex; align-items: center; gap: 14px; width: 100%; height: auto; min-height: 49px; padding: 12px 17px; border: 1px solid transparent; border-radius: 5px; font-size: 14px; letter-spacing: .03em; color: #6b7269; transition: background .15s, color .15s; }
+.house-sidebar .nav a:hover { color: var(--house-green); background: #e8eae0; }
+.house-sidebar .nav a[aria-current] { color: var(--house-green); background: #e0e8dc; border-color: #d3dece; font-weight: 650; }
+.house-sidebar .nav a[aria-current]::after { display: none; }
+.house-sidebar .mobile-menu, .house-nav-scrim { display: none; }
+.house-sidebar-note { margin-top: auto; padding: 48px 15px 0; color: #7c8477; }
+.house-sidebar-note > span { font-size: 8px; letter-spacing: .14em; }
+.house-sidebar-note p { margin-block: 10px 17px; font: 17px/1.8 "Noto Serif CJK SC", "Songti SC", SimSun, serif; color: #63745e; }
+.house-sidebar-note small { font-size: 10px; padding-top: 15px; border-top: 1px solid #d9ddcf; display: block; }
+.site-content { margin-left: var(--sidebar-width); min-width: 0; min-height: 100dvh; container: journal-content / inline-size; }
+.site-content main { min-height: 65dvh; }
+.site-content .house-hero h1 { font-size: clamp(38px, 5.9cqw, 72px); }
+.site-content .camp-v2-intro h1 { font-size: clamp(35px, 4.8cqw, 60px); }
+.site-content .cinema-hero h1 { font-size: clamp(45px, 7.3cqw, 94px); }
+.site-content .wrap { width: min(1264px, calc(100% - 80px)); }
+.site-content .house-wrap { width: min(1180px, calc(100% - 80px)); }
+.site-content .cinema-wrap { width: min(1420px, calc(100% - 80px)); }
+
+@container journal-content (max-width: 1000px) {
+  .footer-main { grid-template-columns: 1.3fr 1fr 1fr; gap: 25px; }
+  .footer-note { display: none; }
+  .house-method { grid-template-columns: 1fr; gap: 24px; }
+  .house-goal-tabs button { padding: 16px; }
+  .house-goal-tabs small { font-size: 10px; }
+  .camp-v2-team { padding: 19px; }
+  .camp-v2-team h3 { font-size: 21px; }
+  .camp-v2-day-panel { gap: 24px; padding: 24px; }
+  .camp-v2-journey li { padding-right: 13px; }
+  .camp-interest { gap: 28px; }
+}
+@container journal-content (max-width: 790px) {
+  .house-hero, .camp-v2-hero { grid-template-columns: 1fr; padding-top: 40px; }
+  .house-still-life { width: min(480px, 90%); margin-inline: auto; }
+  .house-hero h1 { font-size: 55px; }
+  .camp-v2-intro h1 { font-size: 45px; }
+  .camp-v2-desk { width: min(100%, 510px); margin-inline: auto; }
+  .house-product-grid, .camp-interest, .camp-v2-day-panel { grid-template-columns: 1fr; }
+  .camp-v2-team-grid { grid-template-columns: 1fr; }
+  .camp-v2-team > p { min-height: 0; }
+  .camp-v2-team ul { padding-block: 15px; }
+  .camp-v2-journey ol { grid-template-columns: 1fr; }
+  .camp-v2-journey li { border-top: 0; border-left: 1px solid #c6cbb9; padding: 0 0 23px 23px; }
+  .camp-v2-journey li::before { left: -4px; top: 5px; }
+  .camp-v2-journey h3 { margin-block: 4px; }
+  .house-founder { flex-wrap: wrap; }
+  .house-founder > a { margin-left: 0; }
+}
+
+@media (max-width: 900px) {
+  .house-sidebar.site-header { position: sticky; inset: auto; top: 0; width: 100%; height: 72px; border-right: 0; border-bottom: 1px solid var(--house-line); }
+  .house-sidebar .header-inner { flex-direction: row; align-items: center; justify-content: space-between; width: calc(100% - 32px); padding: 0; overflow: visible; }
+  .house-sidebar .brand { padding: 0; }
+  .house-sidebar .brand > span:last-child { font-size: 17px; }
+  .house-sidebar .brand small { font-size: 7px; }
+  .house-sidebar .mobile-menu { display: inline-flex; }
+  .house-sidebar .nav { display: none; position: fixed; z-index: 42; left: 0; top: 72px; bottom: 0; width: min(280px, 85vw); margin: 0; padding: 25px 18px; background: #f0eee7; border-right: 1px solid var(--house-line); box-shadow: 10px 0 30px #29373112; overflow-y: auto; }
+  .house-sidebar .nav.open { display: flex; }
+  .house-nav-scrim { display: block; position: fixed; inset: 72px 0 0; background: #29373140; z-index: 41; }
+  .house-sidebar-note { display: none; }
+  .site-content { margin-left: 0; }
+}
+@media (max-width: 640px) {
+  .site-content .wrap, .site-content .house-wrap, .site-content .cinema-wrap { width: calc(100% - 32px); }
+  .site-content .house-hero h1 { font-size: clamp(34px, 10.4vw, 45px); }
+  .site-content .camp-v2-intro h1 { font-size: 36px; }
+  .house-hero { padding-top: 35px; }
+  .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.pages-edition-note { padding-block: 16px; color: #7c8b70; font-size: 10px; border-top: 1px solid #dce1d2; }
+.pages-edition-note a { text-decoration: underline; margin-inline: 3px; text-underline-offset: 3px; }
