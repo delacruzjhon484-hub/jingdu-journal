@@ -5,7 +5,7 @@ import { ArrowUpRight, ArrowRight, ArrowLeft, Check, Plus, X, BookOpen, Bookmark
 import { journals, lessons, clubTasks, type Journal } from './data';
 import SceneBoard from './scene-board';
 import { useJournalProduct, PurchasePanel, JournalPurchase } from './journal-purchase';
-import { onlineSite,siteFetch as fetch } from './pages-runtime';
+import { checkoutLink,siteFetch as fetch } from './pages-runtime';
 
 
 import { PdfJournalReader } from './pdf-journal-reader';
@@ -91,7 +91,7 @@ export default function Home() {
         window.history.replaceState(window.history.state, '', `#${next}`);
       }
       if (next === '/orders' || next === '/admin/payments') {
-        window.location.replace(onlineSite+'#'+next);
+        window.location.replace(checkoutLink(next));
         return;
       }
       setOpenReaderId(null);
@@ -182,7 +182,7 @@ export default function Home() {
     {route==='/club' && <div className="wrap page-space"><div className="club-page-hero"><div><span className="eyebrow">SEVEN-DAY PRACTICE</span><h1>七天英语精读练习</h1><p>一篇短文，几次追问，一份有自己笔迹的手账。<br/>从每天 15–20 分钟的小练习开始。</p><button className="btn btn-dark" onClick={()=>setReaderId(journals[0].id)}>打开本周原创短文 <BookOpen size={17}/></button><span className="small-copy muted">自定进度 · 七个练习</span></div><div className="club-paper"><span className="hand-note">a little every day.</span><h2>读 · 说 · 写 · 用</h2><p>每次多一点自己的理解。<br/>也多留一个值得继续追问的问题。</p><div>{[BookOpen,Headphones,PenLine,CheckCheck].map((Icon,i)=><span key={i}><Icon size={26}/></span>)}</div></div></div><div className="section-heading"><div><span className="eyebrow">YOUR FIRST SEVEN DAYS</span><h2>先陪自己读完这一周。</h2></div><span className="muted">{local.completedDays.length} / 7 天完成</span></div><div className="day-picker">{clubTasks.map((t,i)=><button key={t} className={clubDay===i?'active':''} onClick={()=>setClubDay(i)} aria-pressed={clubDay===i}><small>DAY</small><b>{String(i+1).padStart(2,'0')}</b>{local.completedDays.includes(i)&&<Check size={15}/>}</button>)}</div><div className="club-task"><div><span className="eyebrow">DAY {String(clubDay+1).padStart(2,'0')} / YOUR LITTLE PRACTICE</span><h2>{clubTasks[clubDay]}</h2><p>围绕《把注意力，还给自己》完成今天的练习。<br/>完成情况与内容只保存在你当前的浏览器中。</p><button className="text-button" onClick={()=>setReaderId(journals[0].id)}>回看短文 <ArrowUpRight size={16}/></button></div><div><label className="notes-label" htmlFor="club-note">今天留下一点什么？</label><textarea id="club-note" rows={5} value={local.clubNotes[clubDay]} onChange={e=>setLocal(prev=>({...prev,clubNotes:prev.clubNotes.map((v,i)=>i===clubDay?e.target.value:v)}))} placeholder="一句复述、一个例句，或一个还没想明白的问题……"/><button className="btn btn-dark" onClick={()=>setLocal(prev=>({...prev,completedDays:prev.completedDays.includes(clubDay)?prev.completedDays.filter(v=>v!==clubDay):[...prev.completedDays,clubDay]}))}>{local.completedDays.includes(clubDay)?<CheckCheck size={17}/>:<Check size={17}/>} {local.completedDays.includes(clubDay)?'已完成今天的练习':'完成今天的练习'}</button></div></div></div>}
     {route === '/shelf' && <div className="wrap page-space personal-shelf">
       <div className="page-heading"><span className="eyebrow">YOUR JOURNAL SHELF</span><h1>我的手账</h1><p>清单随账号保存。阅读进度和笔记保存在当前浏览器。</p></div>
-      <a className="shelf-practice" href={onlineSite+'#/orders'}><ShoppingBag size={19}/><div><strong>我的订单与已购手账</strong><small>查看人工核实进度，下载已购手账</small></div><ArrowUpRight size={16}/></a>
+      <a className="shelf-practice" href={checkoutLink('/orders')}><ShoppingBag size={19}/><div><strong>我的订单与已购手账</strong><small>查看人工核实进度，下载已购手账</small></div><ArrowUpRight size={16}/></a>
       <LearningSnapshot records={local.records}/>
       <section aria-labelledby="continue-title"><h2 id="continue-title" className="shelf-title">继续读</h2>
         {recent.length ? recent.map(journal => <div className="shelf-row" key={journal.id}><AppIcon code={journal.code} color={journal.accent}/><div>
