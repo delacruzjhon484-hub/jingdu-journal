@@ -712,3 +712,7 @@ td { color: #5e6c4f; }
 .shelf-practice { display: flex; align-items: center; gap: 12px; margin-top: 30px; padding: 14px; border: 1px solid #dfe4e9; border-radius: 5px; color: #204491; }
 .shelf-practice div { flex: 1; }
 .shelf-practice small { display: block; color: #626d77; }
+
+.access-help { margin-block: 1rem; font-size: 1rem; line-height: 1.65; }
+.access-help summary { cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: .2em; }
+.access-help p { margin-block: .45rem; }
