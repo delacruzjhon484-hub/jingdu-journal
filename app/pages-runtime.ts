@@ -2,9 +2,9 @@ import { journals } from './data';
 import { campThemes } from './reading-house-data';
 import { wantToReadList, wantToReadId, boardListJournalLimit, type PersonalBoardList } from './board-lists-data';
 
-export const onlineSite = 'https://everything-journal.delacruzjhon484.chatgpt.site/';
+export const onlineSite = 'https://www.jingdushouzhang.com/';
 export function checkoutLink(route:string) {
-  return onlineSite+'signin-with-chatgpt?return_to='+encodeURIComponent('/#'+route);
+  return onlineSite + '#' + route;
 }
 const listsKey = 'jingdu-pages-lists-v1';
 const campKey = 'jingdu-pages-plans-v1';
