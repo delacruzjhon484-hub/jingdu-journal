@@ -1,3 +1,4 @@
+import {groupById,groupForBook} from './group-data';
 import { journals } from './data';
 import { campThemes } from './reading-house-data';
 import { wantToReadList, wantToReadId, boardListJournalLimit, type PersonalBoardList } from './board-lists-data';
@@ -26,7 +27,7 @@ export async function siteFetch(input: string, init: RequestInit = {}): Promise<
   const path = new URL(input, 'https://local.invalid');
   const method = init.method?.toUpperCase() ?? 'GET';
   try {
-    if (path.pathname === '/api/journal-access' && method === 'GET') { const id=path.searchParams.get('id'); if(!journals.some(j=>j.id===id))return json({error:'找不到这本手账。'},404);return json({owned:false,canPurchase:false,signedIn:false,onlineOnly:true,priceCents:1290,currency:'CNY',signInUrl:checkoutLink(`/journal/${id}`)}); }
+    if (path.pathname === '/api/journal-access' && method === 'GET') { const id=path.searchParams.get('id'); if(!groupById(id)&&!journals.some(j=>j.id===id))return json({error:'找不到这本手账。'},404);return json({owned:false,canPurchase:false,signedIn:false,onlineOnly:true,priceCents:1290,currency:'CNY',signInUrl:checkoutLink('/groups/'+(groupById(id)??groupForBook(id??''))?.id)}); }
     if (path.pathname === '/api/board-lists') {
       const lists = listStore();
       if (method === 'GET') return json({ canEdit: true, signInUrl: `${onlineSite}#/shelf`, lists, submitted: [] });

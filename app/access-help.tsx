@@ -12,7 +12,7 @@ export function AccessHelp() {
 export function OrdersEntry() {
   return <section className="wrap page-space">
     <div className="page-heading"><h1>我的订单与已购手账</h1>
-      <p>用下单时的账号登录官网，查看核款进度、下载手账或查看入营安排。</p>
+      <p>用下单时的账号登录官网，查看核款进度、下载已购组内的 7 本手账。</p>
     </div>
     <a className="btn btn-dark" href={checkoutLink('/orders')}>前往官网查看订单</a>
     <AccessHelp/>

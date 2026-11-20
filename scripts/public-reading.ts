@@ -1,3 +1,4 @@
+import {saleLabel} from '../app/group-data';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import type {Journal} from '../app/data';
@@ -18,7 +19,7 @@ export function writeReadingPages(books:Journal[]){
   const title=j.title.replaceAll('\n','');
   const source=j.tedTopic?'TED 演讲 · '+j.tedTopic:j.pdf?'馆藏 PDF 原稿':'本站原创练习';
   const excerpt=j.pdf?'<img loading="lazy" width="360" alt="'+esc(title)+' · 原版封面试读" src="../'+esc(j.pdf.cover.replace(/^\.\//,''))+'">':'<blockquote lang="en">'+esc(j.passages[0]??'')+'</blockquote>';
-  save('read/'+j.id+'.html',title,j.desc,'<small>'+esc(source)+'</small><h1>'+esc(title)+'</h1><p>'+esc(j.desc)+'</p><p>'+esc(j.level)+' · '+esc(j.duration)+' · ¥'+j.price+' / 本</p><p class="actions"><a class="go" href="../#/journal/'+j.id+'">打开试读与购买详情 →</a><a href="index.html">继续选读</a></p>'+excerpt+'<h2>适合谁</h2><p>'+esc(j.audience)+'</p><h2>这篇练什么</h2><p>'+esc(j.outcome)+'</p>');
+  save('read/'+j.id+'.html',title,j.desc,'<small>'+esc(source)+'</small><h1>'+esc(title)+'</h1><p>'+esc(j.desc)+'</p><p>'+esc(j.level)+' · '+esc(j.duration)+' · '+saleLabel(j.id)+'</p><p class="actions"><a class="go" href="../#/journal/'+j.id+'">打开试读与购买详情 →</a><a href="index.html">继续选读</a></p>'+excerpt+'<h2>适合谁</h2><p>'+esc(j.audience)+'</p><h2>这篇练什么</h2><p>'+esc(j.outcome)+'</p>');
  }
  save('read/index.html','全馆手账目录','按来源浏览手账、查看难度、学习时长和独立试读页。','<h1>全馆手账目录</h1><p>共 '+books.length+' 本。选择书名，查看学习重点、难度与试读。</p>'+[['原创练习',books.filter(b=>!b.pdf)],['精读笔记',books.filter(b=>b.pdf&&!b.tedTopic)],['TED 演讲',books.filter(b=>b.tedTopic)]].map(([name,items])=>'<section><h2>'+name+'</h2><ul>'+(items as Journal[]).map(link).join('')+'</ul></section>').join(''));
  const paths=['','read/index.html','service.html',...books.map(j=>'read/'+j.id+'.html')];
