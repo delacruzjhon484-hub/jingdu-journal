@@ -146,6 +146,10 @@ export default function Home() {
   }
   async function copyPrompt() { try { await navigator.clipboard.writeText(lessons[activeLesson].prompt); toast('提示词已复制，带上自己的素材开始练习'); } catch { toast('可选中下方提示词手动复制'); } }
   const activeJournal = journals.find(j=>route===`/journal/${j.id}`);
+  useEffect(()=>{
+    const label=activeJournal?.title.replaceAll('\n','') ?? (route.startsWith('/camp')?'精读陪学营':route.startsWith('/cinema')?'精读手账目录':route.startsWith('/exhibition')?'手帐展':'');
+    document.title=label ? label+' · 精读手账馆' : '精读手账馆 · 英语精读手账与陪学营';
+  },[route,activeJournal]);
   const readerJournal = journals.find(j=>j.id===readerId);
   const recent = journals.filter(journal => local.records[journal.id])
     .sort((a, b) => (local.records[b.id].visitedAt ?? 0) - (local.records[a.id].visitedAt ?? 0));
@@ -170,7 +174,7 @@ export default function Home() {
         <div className="detail-facts"><span><Clock3 size={17}/>{activeJournal.duration}</span><span><BookOpen size={17}/>{activeJournal.level}</span><span><Download size={17}/>网页 · 可打印文件</span></div>
         <div className="neb-tags" aria-label="手账标签">{describeBook(activeJournal).tags.map(tag=><a key={tag} href={`#/exhibition?tag=${encodeURIComponent(tag)}`}>{tag}</a>)}</div>
         <div className="detail-outcome"><small>读完，你会带走</small><p>{activeJournal.outcome}</p></div>
-        <div className="detail-buttons"><button className="btn btn-dark" onClick={() => setReaderId(activeJournal.id)}>免费试读 <ArrowUpRight size={17}/></button><span className="detail-price">¥12.9 <small>/ 本</small></span></div><JournalPurchase id={activeJournal.id}/>
+        <div className="detail-buttons"><button className="btn btn-dark" onClick={() => setReaderId(activeJournal.id)}>免费试读 <ArrowUpRight size={17}/></button><span className="detail-price">¥12.9 <small>/ 本</small></span></div><a className="house-text-link" href={`./read/${activeJournal.id}.html`}>这本手账的独立介绍页 ↗</a><JournalPurchase id={activeJournal.id}/>
         <AddToList key={activeJournal.id} journalId={activeJournal.id} lists={lists}/>
       </div></div>
       <div className="detail-info-grid">
@@ -210,7 +214,7 @@ export default function Home() {
     <footer className="site-footer"><div className="wrap footer-main">
       <div><Logo small/><p>读一篇读懂，把实力存下。<br/>精读手账 · 陪学营</p></div>
       <div><h3>精读与陪学</h3><a href="#/cinema">精读手账</a><a href="#/camp">陪学营</a><a href="#/board">场景白板</a></div>
-      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/exhibition">手帐展</a><a href="#/method">精读方法</a><a href="#/admin/payments">收款管理</a><span className="footer-founder">半知创始人</span></div>
+      <div><h3>在这里开始</h3><a href="#/shelf">我的手账</a><a href="#/exhibition">手帐展</a><a href="#/method">精读方法</a><a href="./read/index.html">馆藏目录</a><a href="./service.html#privacy">隐私说明</a><a href="./service.html#terms">使用约定</a><a href="./service.html#refund">售后与退款</a><span className="footer-founder">半知创始人</span></div>
       <div className="footer-note"><span className="hand-note">保持好奇，<br/>慢慢成为自己的作者。</span><small>READ DEEPLY. KEEP SOMETHING.</small></div>
     </div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} 精读手账馆</span><span>半知创始人</span></div></footer></div>
     {readerJournal && <Modal title="精读手账 · 试读与已购阅读" wide onClose={() => setReaderId(null)}>

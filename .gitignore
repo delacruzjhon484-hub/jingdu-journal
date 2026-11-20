@@ -1,3 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+
+/public/read/
+/public/sitemap.xml
+/public/robots.txt

@@ -1,51 +1,34 @@
 'use client';
-
-import { useState } from 'react';
-import { ArrowRight, ArrowUpRight, BookOpen, Feather, Layers3 } from 'lucide-react';
-import { JournalSample, EditorialShelf } from './journal-experience';
-import type { LearningRecord } from './reading-records';
-import { campPlans, campRoute, learningGoals } from './reading-house-data';
+import {useState} from 'react';
+import {ArrowRight,ArrowUpRight,BookOpen,Feather} from 'lucide-react';
+import {JournalSample} from './journal-experience';
+import type {LearningRecord} from './reading-records';
+import {campPlans,campRoute,learningGoals} from './reading-house-data';
+import {journals} from './data';
+import JournalWorkshop from './journal-workshop';
 import SkillHome from './skill-home';
 
-export default function ReadingHouse({ onRead, record, onChange }: { onRead: (id: string) => void; record: LearningRecord; onChange: (value: { note: string; done: boolean }) => void }) {
-  const [goal, setGoal] = useState<typeof learningGoals[number]>(learningGoals[0]);
-  return <div className="reading-house">
-    <SkillHome onRead={onRead}><JournalSample record={record} onChange={onChange} onRead={onRead}/></SkillHome>
-
-    <section className="house-goals house-wrap" aria-labelledby="goals-title">
-      <div className="house-section-top"><div><span className="house-eyebrow">START WITH YOUR GOAL</span><h2 id="goals-title">你想从阅读里，得到什么？</h2></div><span className="house-section-note">选一个目标，找第一本手账。</span></div>
-      <div className="house-goal-tabs" role="group" aria-label="学习目标">{learningGoals.map(item => <button key={item.id} aria-pressed={item.id === goal.id} onClick={() => setGoal(item)}><span>0{learningGoals.indexOf(item) + 1}</span><strong>{item.label}</strong><small>{item.audience}</small><ArrowUpRight size={17}/></button>)}</div>
-      <div className="house-goal-result"><p>{goal.line}</p><button onClick={() => onRead(goal.bookId)}>打开推荐体验篇 <ArrowRight size={15}/></button><a href={`#/camp/${goal.camp}`}>看看适合的陪学主题 <ArrowUpRight size={14}/></a></div>
-    </section>
-
-    <section className="house-products house-wrap" aria-labelledby="products-title">
-      <div className="house-section-top"><div><span className="house-eyebrow">JOURNALS & COMPANIONSHIP</span><h2 id="products-title">自己慢慢读，也有人陪着走。</h2></div></div>
-      <div className="house-product-grid">
-        <article className="house-product journal">
-          <div className="house-product-top"><span>01 / 内容产品</span><BookOpen size={24}/></div><h3>精读手账</h3><p>从一篇内容出发，留下理解、批注和练习。<br/>单本入手，也能按主题收成一组。</p>
-          <div className="house-product-levels"><div><span>单本</span><p>一篇内容 · 一本手账</p></div><div><span>合集</span><p>围绕目标 · 组合成组</p></div><div><span>学习笔记</span><p>译注联想 · 留下自己的话</p></div></div>
-          <a className="house-button light" href="#/cinema">浏览精读手账 <ArrowUpRight size={16}/></a>
-        </article>
-        <article className="house-product camp">
-          <div className="house-product-top"><span>02 / 陪学服务</span><Feather size={24}/></div><h3>陪学营</h3><p>围绕一个主题，按节奏一起精读。<br/>带读 · 打卡 · 答疑 · 社群。</p>
-          <div className="house-camp-options">{campPlans.map(plan=><a key={plan.key} href={`#/camp/${campRoute('ted',plan)}`}><span>{plan.name}</span><strong>¥{plan.price}</strong><small>{plan.days} 天 · {plan.days} 篇</small></a>)}</div>
-          <p className="house-camp-team">半知创始人真人陪学 × Agent 助教团<br/>半知精读教研团队</p>
-          <p className="house-camp-plan">TED · 外刊 · 名著节选，每次选择一个主题。</p>
-          <a className="house-button light" href="#/camp">了解陪学营 <ArrowUpRight size={16}/></a><small className="house-plan-note">开营日期按所选营期与主题公布</small>
-        </article>
-      </div>
-    </section>
-
-    <EditorialShelf onRead={onRead}/>
-    <section className="house-wrap">
-      <div className="house-board-link"><Layers3 size={20}/><div><strong>已经有具体想做的事？</strong><p>从备考、旅行到写作，在 18 份场景清单里找手账。</p></div><a href="#/board" className="house-text-link">打开场景白板 <ArrowUpRight size={16}/></a></div>
-    </section>
-
-    <section className="house-method house-wrap">
-      <div><span className="house-eyebrow">ONE PAGE AT A TIME</span><h2>读 · 拆 · 写 · 用</h2><p>从看懂文字，到说出自己的理解。</p><a href="#/method" className="house-text-link">看看精读方法 <ArrowUpRight size={15}/></a></div>
-      <ol>{[['读','带着问题读一遍'],['拆','拆词句，也拆观点'],['写','写下复述与联想'],['用','做一个小练习']].map(([word, line], index) => <li key={word}><span>0{index + 1}</span><strong>{word}</strong><p>{line}</p></li>)}</ol>
-    </section>
-
-    <section className="house-founder house-wrap"><div className="house-founder-monogram" aria-hidden="true">知</div><div><span className="house-eyebrow">FOUNDER / 创始人</span><h2>半知创始人</h2><p>精读手账馆，由半知创始人发起。<br/>以精读手账为核心产品，连接自主阅读与持续陪学。</p></div><a href="#/camp" className="house-text-link">从一次陪学开始 <ArrowRight size={16}/></a></section>
-  </div>;
+const recommendations=[
+ {book:'pdf-human-memory',camp:'press-month',campName:'外刊精读 · 一月营',why:'备考阅读常遇到作者先提出解释、再用实验修正它。练习定位观点和证据，适合四六级、考研阅读备考。此篇为拓展练习。'},
+ {book:'ted-180',camp:'ted-week',campName:'TED 精读 · 一周营',why:'从分布式团队的案例入手，练习用英文向同事解释一项工作安排。'},
+ {book:'book-into-life',camp:'books-week',campName:'名著节选 · 一周营',why:'从一段文字里找出打动自己的细节，再用一句话说明它与你的生活有什么关系。'},
+];
+export default function ReadingHouse({onRead,record,onChange}:{onRead:(id:string)=>void;record:LearningRecord;onChange:(value:{note:string;done:boolean})=>void}){
+ const [goal,setGoal]=useState(0), pick=recommendations[goal], book=journals.find(j=>j.id===pick.book)!;
+ return <div className="reading-house">
+ <JournalWorkshop onRead={onRead}/><JournalSample record={record} onChange={onChange} onRead={onRead}/>
+ <section className="house-wrap front-section"><div className="house-section-top"><h2>按你的目标，找一本读。</h2></div>
+ <div className="front-tabs" role="group" aria-label="学习目标">{learningGoals.map((g,i)=><button key={g.id} aria-pressed={goal===i} onClick={()=>setGoal(i)}>{g.label}</button>)}</div>
+ <div className="front-recommend" aria-live="polite"><div><small>{book.tedTopic?'TED 演讲':book.pdf?'PDF 精读笔记':'本站原创'} · {book.level} · {book.duration}</small><h3>{book.title.replaceAll('\n','')}</h3><p>{pick.why}</p></div><div><button className="house-button light" onClick={()=>onRead(book.id)}>试读这一本 <ArrowRight size={16}/></button><a className="house-text-link" href={'#/camp/'+pick.camp}>{pick.campName} <ArrowUpRight size={15}/></a></div></div>
+ <div className="front-links"><a href="./read/index.html">查看全馆 {journals.length} 本手账 →</a><a href="#/exhibition">按标签逛手帐展 →</a></div></section>
+ <section className="house-wrap front-section"><div className="house-section-top"><h2>自己读，还是一起学？</h2></div><div className="house-product-grid">
+ <article className="house-product journal"><BookOpen size={23}/><h3>自己读一本</h3><strong className="front-price">¥12.9 <small>/ 本</small></strong><p>按本购买，照自己的节奏读。TED 系列每本含可手写的 PDF 和互动网页版，其他手账的交付格式见详情。</p><a className="house-button light" href="#/cinema">浏览与试读 <ArrowUpRight size={16}/></a></article>
+ <article className="house-product camp"><Feather size={23}/><h3>跟着陪学营读</h3><div className="house-camp-options">{campPlans.map(p=><a key={p.key} href={'#/camp/'+campRoute('ted',p)}><span>{p.name}</span><strong>¥{p.price}</strong><small>{p.days} 天 · {p.days} 篇</small></a>)}</div><p>每天一篇，按营期使用当期学习材料，共同带读、打卡和答疑。选营时可查看开营日期，待排期的营可免费登记提醒。</p><a className="house-button light" href="#/camp">查看各营排期 <ArrowUpRight size={16}/></a></article></div></section>
+ <section className="house-wrap front-section front-trust"><div><small>半知创始人 · 石雄</small><h2>谁在陪你读？</h2><p>石雄发起精读手账馆，带领半知精读教研团队选材、设计练习，在陪学营中参与带读、讨论和阶段回看。Agent 助教团协助拆句、复述和复习。</p><a className="house-text-link" href="#/camp">了解陪学分工 →</a></div><div><small>翻开一份真实馆藏</small><h3>《睡眠才是超能力》</h3><p>看看第 1 页怎样安排学习路线，再翻到第 3 页，看演讲中的英文怎样变成一页精读练习。</p><button className="house-text-link" onClick={()=>onRead('ted-001')}>查看原版内页 →</button></div></section>
+ <section className="house-wrap front-section front-faq"><h2>开始前，你可能想知道</h2>
+ <details><summary>适合什么程度？一篇要读多久？</summary><p>先看每本的难度和预计时长。原创体验篇《把注意力，还给自己》标为 B1、约 20 分钟。TED 手账通常包含多项练习，可以先完成一个选段，之后再做复述。</p></details>
+ <details><summary>PDF 和互动网页版怎么选？</summary><p>PDF 适合打印和 iPad 手写；互动版适合在浏览器里听读、做题和复习。购买前可在详情页核对这一本包含哪些格式。</p></details>
+ <details><summary>陪学营含哪些材料？错过打卡怎么办？</summary><p>对应营期安排 7、30 或 60 篇学习材料。营内使用当期学习材料；如需某一本的独立下载版，请先核对报名说明。错过当天可先回看自己的手账，需要补交或调整进度时联系当期带读老师。</p></details>
+ <details><summary>付款后多久开通？需要退款怎么联系？</summary><p>订单采用微信扫码、人工核实到账。客服在 09:00–20:00 处理。遇到重复付款、下载异常或退营需求，请保留订单号，联系微信 imhuangshu 或邮箱 2031887069@qq.com。</p><a href="./service.html#refund">查看售后与退款流程 →</a></details>
+ <SkillHome/></section></div>;
 }

@@ -248,7 +248,7 @@ export default function JournalCinema({ onRead, lists, initialUpload = false, in
         <div className="cinema-form-columns"><label>主题<select name="theme" defaultValue={cinemaThemes.some(theme => theme.id === filter) ? filter : 'life'}>{cinemaThemes.map(theme => <option key={theme.id} value={theme.id}>{theme.name}</option>)}</select></label><label>署名 <small>选填</small><input name="author" maxLength={30} placeholder="匿名作者"/></label></div>
         <label>简介<textarea name="summary" rows={3} maxLength={180} placeholder="这本手账可以帮读者做什么？" required/></label>
         <label className="cinema-file"><span><FileUp size={19}/>选择 PDF <small>上限 12 MB</small></span><input name="file" type="file" accept="application/pdf,.pdf" required/></label>
-        <p className="cinema-scope">上传后，能访问当前站点的读者可以查看。</p>
+        <p className="cinema-scope">上传后，读者可公开查看。请确认你拥有公开分享这份文件的权利。<a href="./service.html#rights">查看投稿约定</a></p>
         {error && <p className="cinema-error" role="alert">{error}</p>}
         {access && !access.canUpload ? <a href={access.signInUrl} target="_top" className="cinema-btn cinema-play">登录后上传 <ArrowUpRight size={16}/></a>
           : <button type="submit" className="cinema-btn cinema-play" disabled={busy || loading}>{busy ? '正在上传…' : '上传并加入手账馆'}</button>}
