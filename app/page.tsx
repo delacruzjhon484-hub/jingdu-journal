@@ -84,7 +84,7 @@ export default function Home() {
   const toastTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
   function toast(text: string) { setMessage(text); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(()=>setMessage(''), 3800); }
   useEffect(() => {
-    function updateRoute() {
+    function updateRoute(event?: HashChangeEvent) {
       let next = window.location.hash.slice(1) || '/';
       if (next === '/community') { next = '/exhibition'; window.history.replaceState(window.history.state, '', '#/exhibition'); }
       if (next === '/network' || next === '/store' || next === '/plans') {
@@ -98,7 +98,7 @@ export default function Home() {
       setOpenReaderId(null);
       setRoute(next);
       setMobileNav(false);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (!(event && /^#\/camp(?:\/|$)/.test(new URL(event.oldURL).hash) && /^\/camp(?:\/|$)/.test(next))) window.scrollTo({ top: 0, behavior: 'instant' });
     }
     updateRoute();
     window.addEventListener('hashchange', updateRoute);
@@ -159,7 +159,7 @@ export default function Home() {
 
     {route === '/' && <ReadingHouse onRead={setReaderId} record={record('small-attention')} onChange={value => setRecord('small-attention', value)}/>}
     {(route === '/exhibition' || route.startsWith('/exhibition?')) && <JournalExhibition/>}
-    {(route === '/camp' || route.startsWith('/camp/')) && <ReadingCamp themeId={route.split('/')[2] ?? 'ted'} onRead={setReaderId}/>}
+    {(route === '/camp' || route.startsWith('/camp/')) && <ReadingCamp themeId={route.split('/')[2] ?? 'ted-week'} onRead={setReaderId}/>}
     {route === '/board' && <SceneBoard records={local.records} onRead={setReaderId} onCreateList={openList} reading={Boolean(readerId || createDraft)}/>}
     {(route === '/cinema' || route === '/cinema/ted' || route === '/cinema/upload') && <JournalCinema key={route} initialTed={route === '/cinema/ted'} onRead={setReaderId} lists={lists} initialUpload={route === '/cinema/upload'}/>}
     {activeJournal && <div className="wrap page-space">

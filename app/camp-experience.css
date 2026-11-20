@@ -111,3 +111,17 @@
   .camp-v2-final { grid-template-columns: 1fr; }
   .camp-v2-final small { grid-column: 1; }
 }
+
+.camp-series {grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;scroll-margin-top:24px}
+.camp-edition {display:flex;flex-direction:column;align-items:flex-start;border:1px solid #cccbbc;border-radius:10px;background:#fcfaf5;color:#293d34;padding:clamp(18px,2.4vw,32px);text-decoration:none}
+.camp-edition[aria-current=true],.camp-edition:hover {border-color:#556e58;background:#eff2e9}
+.edition-facts {display:flex;align-items:center;justify-content:space-between;width:100%;font-size:14px}
+.edition-facts b {display:flex;gap:3px;align-items:center;font-weight:500}
+.camp-edition h2 {font:600 clamp(24px,2.3vw,34px)/1.4 "Songti SC",serif;margin:20px 0 2px}
+.edition-price {font:500 29px/1.4 Georgia,serif}
+.camp-edition h3 {margin:20px 0 4px;font-size:16px}
+.camp-edition p {margin:0;line-height:1.7;font-size:15px;color:#506054}
+.house-camp-options {display:grid;grid-template-columns:repeat(3,1fr);margin:20px 0;gap:12px}
+.house-camp-options a {display:grid;gap:5px;border-top:1px solid currentColor;padding-top:12px;color:inherit;text-decoration:none}
+.house-camp-options strong {font:500 26px/1.2 Georgia,serif}
+@media(max-width:700px){.camp-series{grid-template-columns:1fr}.camp-edition{display:grid;grid-template-columns:1fr auto;column-gap:12px}.edition-facts,.camp-edition h3,.camp-edition p{grid-column:1/-1}.camp-edition h2,.edition-price{margin:6px 0;align-self:center}.camp-edition h3{margin-top:8px}}

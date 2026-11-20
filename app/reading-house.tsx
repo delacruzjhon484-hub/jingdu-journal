@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Feather, Layers3 } from 'lucide-react';
 import { JournalSample, EditorialShelf } from './journal-experience';
 import type { LearningRecord } from './reading-records';
-import { learningGoals } from './reading-house-data';
+import { campPlans, campRoute, learningGoals } from './reading-house-data';
 import SkillHome from './skill-home';
 
 export default function ReadingHouse({ onRead, record, onChange }: { onRead: (id: string) => void; record: LearningRecord; onChange: (value: { note: string; done: boolean }) => void }) {
@@ -28,10 +28,10 @@ export default function ReadingHouse({ onRead, record, onChange }: { onRead: (id
         </article>
         <article className="house-product camp">
           <div className="house-product-top"><span>02 / 陪学服务</span><Feather size={24}/></div><h3>陪学营</h3><p>围绕一个主题，按节奏一起精读。<br/>带读 · 打卡 · 答疑 · 社群。</p>
-          <div className="house-camp-facts"><strong>60<small>天</small></strong><span className="house-camp-price">¥699<small>陪学方案</small></span></div>
+          <div className="house-camp-options">{campPlans.map(plan=><a key={plan.key} href={`#/camp/${campRoute('ted',plan)}`}><span>{plan.name}</span><strong>¥{plan.price}</strong><small>{plan.days} 天 · {plan.days} 篇</small></a>)}</div>
           <p className="house-camp-team">半知创始人真人陪学 × Agent 助教团<br/>半知精读教研团队</p>
-          <p className="house-camp-plan">TED · 外刊 · 名著节选，每个主题规划 60 篇。</p>
-          <a className="house-button light" href="#/camp">了解陪学营 <ArrowUpRight size={16}/></a><small className="house-plan-note">方案筹备中 · 开营日期待公布</small>
+          <p className="house-camp-plan">TED · 外刊 · 名著节选，每次选择一个主题。</p>
+          <a className="house-button light" href="#/camp">了解陪学营 <ArrowUpRight size={16}/></a><small className="house-plan-note">开营日期按所选营期与主题公布</small>
         </article>
       </div>
     </section>

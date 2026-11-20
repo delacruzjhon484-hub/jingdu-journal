@@ -1,5 +1,6 @@
 'use client';
 
+import {campPlans,campRoute,type CampPlan,type CampThemeId} from './reading-house-data';
 import { useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, Copy, Feather, MessageCircle, PenLine, Users } from 'lucide-react';
 
@@ -35,19 +36,19 @@ const dailySteps = [
     prompt: '请帮我做一次精读复盘。先让我不看原文复述主线，再让我贴出原文和初次笔记，比较哪些理解有依据、哪些遗漏需要补充，最后整理下一轮回看清单。' },
 ];
 
-export function CampHero() {
+export function CampHero({plan,theme}:{plan:CampPlan;theme:CampThemeId}) {
   return <section className="camp-v2-hero house-wrap">
     <div className="camp-v2-intro">
       <span className="house-eyebrow"><Feather size={14}/> 精读手账馆 · 半知精读陪学</span>
-      <h1>60 天，把「看懂」<br/>练成<span>「说出来」。</span></h1>
+      <h1>精读陪学营<span>系列</span></h1>
       <p className="camp-v2-lead">一篇内容，一本精读手账，一次自己的表达。<br/>带读 · 打卡 · 答疑 · 社群，把阅读落到每天。</p>
       <div className="camp-v2-teamline"><strong>半知创始人真人陪学</strong><span>×</span><strong>Agent 助教团</strong><span>×</span><strong>半知精读教研团队</strong></div>
-      <div className="house-actions"><button className="house-button dark" onClick={() => jumpTo('camp-interest')}>选择我的陪学主题 <ArrowRight size={16}/></button><button className="house-text-link" onClick={() => jumpTo('camp-support')}>看看谁来陪、怎么陪 <ArrowDown size={15}/></button></div>
-      <p className="camp-v2-status">60 天 · 每主题规划 60 篇 · ¥699 / 主题方案</p>
-      <small className="house-plan-note">按主题排期 · 选定主题后查看报名安排</small>
+      <div className="house-actions"><button className="house-button dark" onClick={() => jumpTo('camp-series')}>选一个适合我的营期 <ArrowRight size={16}/></button><button className="house-text-link" onClick={() => jumpTo('camp-support')}>看看谁来陪、怎么陪 <ArrowDown size={15}/></button></div>
+      
+      
     </div>
     <div className="camp-v2-desk" aria-label="精读手账和三方陪学分工示意">
-      <span className="camp-v2-desk-top">THE DAILY READING JOURNAL <span>01 / 60</span></span>
+      <span className="camp-v2-desk-top">THE DAILY READING JOURNAL <span>01 / {plan.days}</span></span>
       <div className="camp-v2-notebook">
         <span>精读手账馆 / 原创练习</span><h2>A little more<br/>attention.</h2>
         <p>What deserves my attention today?</p>
@@ -58,7 +59,7 @@ export function CampHero() {
       <div className="camp-v2-margin"><div><span>教研团队</span><p>选材、译注、设计练习</p></div><div><span>Agent 助教团</span><p>拆词句、练表达、做复习</p></div><div><span>半知创始人</span><p>真人带读与阶段陪伴</p></div></div>
       <span className="camp-v2-desk-foot">一份手账，把陪学串起来。</span>
     </div>
-    <div className="camp-v2-measures">{[['60','天','持续精读周期'],['60','篇','每主题内容规划'],['3','方','真人 × Agent × 教研'],['3','分钟','TED 主题结营复述目标']].map(([number,unit,label]) => <div key={label}><strong>{number}<small>{unit}</small></strong><span>{label}</span></div>)}</div>
+    <div className="camp-series" id="camp-series" aria-label="选择陪学营期">{campPlans.map(option=><a className="camp-edition" href={`#/camp/${campRoute(theme,option)}`} key={option.key} aria-current={option.key===plan.key?'true':undefined}><span className="edition-facts">{option.days} 天 · {option.days} 篇{option.key===plan.key && <b><Check size={14}/>已选</b>}</span><h2>{option.name}</h2><strong className="edition-price">¥{option.price}</strong><h3>{option.purpose}</h3><p>{option.detail}</p></a>)}</div>
   </section>;
 }
 
@@ -86,10 +87,10 @@ export function CampStudyDay({ onRead }: { onRead: (id: string) => void }) {
   </section>;
 }
 
-export function CampJourney() {
+export function CampJourney({plan}:{plan:CampPlan}) {
   return <section className="camp-v2-journey house-wrap" aria-labelledby="camp-journey-title">
-    <div className="house-section-top"><div><span className="house-eyebrow">60 DAYS, SMALL STEPS</span><h2 id="camp-journey-title">有节奏地读，也有意识地回头看。</h2></div></div>
-    <ol>{[['D1','建立方法','认识精读手账，记录第一版理解。'],['D3','第一次回看','合上原文，回想词句与观点。'],['D7','第一周复盘','带着问题再读，补充自己的笔记。'],['每周','交流与反馈','跟读、复述、讨论，整理待解决的问题。'],['D60','结营作品','以一份精读成果，回看自己的变化。']].map(([day,title,line]) => <li key={day}><span>{day}</span><h3>{title}</h3><p>{line}</p></li>)}</ol>
-    <div className="camp-v2-final"><span>结营目标</span><p>TED 主题以 <strong>3 分钟英文复述</strong>为目标；外刊与名著节选主题围绕所读内容完成复述或读后表达。</p><small>具体篇目、任务与评价方式以开营安排为准。</small></div>
+    <div className="house-section-top"><div><span className="house-eyebrow">{plan.days} DAYS</span><h2 id="camp-journey-title">有节奏地读，也有意识地回头看。</h2></div></div>
+    <ol>{[['D1','建立方法','认识精读手账，记录第一版理解。'],['D3','第一次回看','合上原文，回想词句与观点。'],...(plan.days>7 ? [['D7','第一周复盘','带着问题再读，补充自己的笔记。'],['每周','交流与反馈','跟读、复述、讨论，整理待解决的问题。']] : []),['D'+plan.days,'结营回看',plan.detail]].map(([day,title,line]) => <li key={day}><span>{day}</span><h3>{title}</h3><p>{line}</p></li>)}</ol>
+    <div className="camp-v2-final"><span>结营目标</span><p>{plan.key==='deep'?'TED 主题练习三分钟英文复述，外刊与名著节选主题完成读后表达。':plan.key==='month'?'从本月手账中选一个反复遇到的问题，整理成一页主题小结。':'从七篇里选出最想记住的一篇，用自己的话复述它。'}</p><small>具体篇目、任务与评价方式以开营安排为准。</small></div>
   </section>;
 }
