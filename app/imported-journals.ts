@@ -1,4 +1,5 @@
 import type { Journal } from './data';
+import { tedJournals } from './ted-journals';
 export const importedJournals: Journal[] = [
   {
     "id": "pdf-deep-reading",
@@ -602,5 +603,6 @@ export const importedJournals: Journal[] = [
         }
       ]
     }
-  }
+  },
+  ...tedJournals,
 ];

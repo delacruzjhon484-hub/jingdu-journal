@@ -18,7 +18,7 @@ const featured = journals.find(journal => journal.id === 'pdf-deep-reading') ?? 
 const selectedIds = ['ai-as-coach', 'travel-confirm-first', 'after-a-breakup', 'story-in-frames', 'ielts-small-story', 'presentation-one-idea'];
 
 function makeOriginal(journal: Journal, number: number): Film {
-  return { id: journal.id, title: journal.title, label: themeForJournal(journal.id).name,
+  return { id: journal.id, title: journal.title, label: journal.tedTopic ? journal.en + " · " + journal.tedTopic : themeForJournal(journal.id).name,
     color: journal.color, ink: journal.accent, number, caption: journal.pdf ? `${journal.pdf.pages} 页 · PDF` : journal.duration };
 }
 
@@ -83,8 +83,8 @@ function FilmRow({ title, detail, films, onOpen, grid = false }: { title: string
   </section>;
 }
 
-export default function JournalCinema({ onRead, lists, initialUpload = false }: { onRead: (id: string) => void; lists: BoardListFeedState; initialUpload?: boolean }) {
-  const [filter, setFilter] = useState('all');
+export default function JournalCinema({ onRead, lists, initialUpload = false, initialTed = false }: { onRead: (id: string) => void; lists: BoardListFeedState; initialUpload?: boolean; initialTed?: boolean }) {
+  const [filter, setFilter] = useState(initialTed ? 'ted' : 'all');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
   const [submissions, setSubmissions] = useState<CinemaSubmission[]>([]);
@@ -176,18 +176,19 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
 
   const audienceFilms = submissions.map(makeSubmission);
   const featureFilm = originals.get(featured.id)!;
-  const searching = Boolean(query.trim() || category);
+  const searching = Boolean(query.trim() || category || filter === 'ted');
   const theme = cinemaThemes.find(item => item.id === filter);
   const themeIds = theme ? new Set(themeJournals(theme).map(journal => journal.id)) : null;
   const keywords = query.trim().toLowerCase().split(/\s+/);
   const results = searching ? [...originals.values(), ...audienceFilms].filter(film => {
     const journal = journals[film.number];
     const submission = film.submission;
+    if (filter === 'ted' && !journal?.tedTopic) return false;
     if (filter === 'submissions' && !submission) return false;
     if (theme && (submission ? submission.theme !== theme.id : !themeIds?.has(film.id))) return false;
     if (category && (submission ? category !== 'PDF 投稿' : category !== journal.category)) return false;
     const scenes = boardScenes.filter(scene => scene.bookIds.includes(film.id)).map(scene => scene.title).join(' ');
-    const text = [film.title.replaceAll('\n', ''), film.label, journal?.category, journal?.desc, journal?.outcome,
+    const text = [film.title.replaceAll('\n', ''), film.label, journal?.category, journal?.en, journal?.tedTopic, journal?.desc, journal?.outcome,
       scenes, submission?.author, submission?.summary].filter(Boolean).join(' ').toLowerCase();
     return keywords.every(word => text.includes(word));
   }) : [];
@@ -220,14 +221,15 @@ export default function JournalCinema({ onRead, lists, initialUpload = false }: 
         </select>
       </div>
       <div className="cinema-bar"><div className="cinema-tabs" role="group" aria-label="精读主题分类">
-        {[{ id: 'all', name: '全部清单' }, ...cinemaThemes, { id: 'submissions', name: '观众投稿' }].map(tab => <button key={tab.id} aria-pressed={filter === tab.id} onClick={() => { setFilter(tab.id); if (tab.id === 'submissions' && category !== 'PDF 投稿') setCategory(''); }}>{tab.name}</button>)}
+        {[{ id: 'all', name: '全部清单' }, { id: 'ted', name: 'TED 演讲' }, ...cinemaThemes, { id: 'submissions', name: '观众投稿' }].map(tab => <button key={tab.id} aria-pressed={filter === tab.id} onClick={() => { setFilter(tab.id); if (tab.id === 'ted' || (tab.id === 'submissions' && category !== 'PDF 投稿')) setCategory(''); }}>{tab.name}</button>)}
       </div><span className="cinema-count">{journals.length} 本手账 · {submissions.length} 份投稿</span></div>
       {notice && <p className="cinema-notice" role="status">{notice}</p>}
       {searching ? (results.length
-        ? <FilmRow title="搜索与筛选结果" detail={`找到 ${results.length} 份手账`} films={results} onOpen={openFilm} grid/>
+        ? <FilmRow title={filter === 'ted' ? 'TED 演讲精读' : '搜索与筛选结果'} detail={`找到 ${results.length} 份手账`} films={results} onOpen={openFilm} grid/>
         : <section className="cinema-empty"><h2>还没找到符合条件的手账</h2><p>试试换个关键词，或浏览全部清单。</p><button className="cinema-btn cinema-upload" onClick={() => { setQuery(''); setCategory(''); setFilter('all'); }}>清除筛选</button></section>)
         : <>
-      {filter === 'all' && <FilmRow title="新上架 · 半知精读 PDF" detail="14 个主题 · 同主题版本合并 · 点击封面试读真实内页" films={journals.filter(j=>j.pdf).map(j=>originals.get(j.id)!)} onOpen={openFilm} grid/>}
+      {filter === 'all' && <section><FilmRow title="TED 演讲精读" detail="每本含手写 PDF 与互动网页版，点击封面可翻阅两页。" films={journals.filter(j=>j.tedTopic).slice(0,8).map(j=>originals.get(j.id)!)} onOpen={openFilm}/><a className="house-text-link" href="#/cinema/ted">浏览全部 {journals.filter(j=>j.tedTopic).length} 本 TED 手账 <ArrowUpRight size={15}/></a></section>}
+      {filter === 'all' && <FilmRow title="半知精读 PDF" detail="14 个主题 · 同主题版本合并 · 点击封面试读真实内页" films={journals.filter(j=>j.pdf&&!j.tedTopic).map(j=>originals.get(j.id)!)} onOpen={openFilm} grid/>}
       {filter === 'all' && <FilmRow title="方法体验 · 今天读什么" detail="先挑一本最贴近当下的手账。" films={selectedIds.map(id => originals.get(id)!)} onOpen={openFilm}/>}
       {cinemaThemes.filter(theme => filter === 'all' || filter === theme.id).map(theme => <FilmRow key={theme.id} title={theme.name} detail={theme.line} films={[
         ...themeJournals(theme).filter(j=>filter!=='all'||!j.pdf).map(journal => originals.get(journal.id)!), ...audienceFilms.filter(film => film.submission?.theme === theme.id),

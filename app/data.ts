@@ -4,6 +4,7 @@ export type Journal = {
   id: string; category: string; code: string; title: string; en: string; color: string;
   accent: string; desc: string; price: number; level: string; duration: string;
   pdf?: {cover:string;previews:{src:string;page:number}[];pages:number;versions:{key:string;label:string;pages:number}[]};
+  tedTopic?: string;
   totalPassages?: number; audience: string; outcome: string; passages: string[]; translation: string[];
   vocabulary: string[]; question: string; answer: string; task: string;
 };

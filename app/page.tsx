@@ -161,7 +161,7 @@ export default function Home() {
     {(route === '/exhibition' || route.startsWith('/exhibition?')) && <JournalExhibition/>}
     {(route === '/camp' || route.startsWith('/camp/')) && <ReadingCamp themeId={route.split('/')[2] ?? 'ted'} onRead={setReaderId}/>}
     {route === '/board' && <SceneBoard records={local.records} onRead={setReaderId} onCreateList={openList} reading={Boolean(readerId || createDraft)}/>}
-    {(route === '/cinema' || route === '/cinema/upload') && <JournalCinema onRead={setReaderId} lists={lists} initialUpload={route === '/cinema/upload'}/>}
+    {(route === '/cinema' || route === '/cinema/ted' || route === '/cinema/upload') && <JournalCinema key={route} initialTed={route === '/cinema/ted'} onRead={setReaderId} lists={lists} initialUpload={route === '/cinema/upload'}/>}
     {activeJournal && <div className="wrap page-space">
       <a href="#/cinema" className="back-link"><ArrowLeft size={16}/>精读手账</a>
       <div className="detail-grid"><div className="detail-cover"><Cover journal={activeJournal}/></div><div className="detail-copy">
@@ -205,7 +205,7 @@ export default function Home() {
       <a className="shelf-practice" href="#/camp"><BookOpen size={19}/><div><strong>我的陪学意向</strong><small>查看主题与学习目标</small></div><ArrowUpRight size={16}/></a>
       <a className="shelf-practice" href="#/club"><BookOpen size={19}/><div><strong>七天英语精读练习</strong><small>{local.completedDays.length} / 7 天完成</small></div><ArrowUpRight size={16}/></a>
     </div>}
-    {!['/orders','/admin/payments','/import','/','/board','/cinema','/cinema/upload','/exhibition','/method','/club','/camp','/shelf'].includes(route) && !route.startsWith('/exhibition?') && !route.startsWith('/camp/') && !activeJournal && <div className="wrap empty-state page-space"><h1>这一页，还在路上。</h1><a href="#/" className="btn btn-dark">回到首页 <ArrowRight size={17}/></a></div>}
+    {!['/orders','/admin/payments','/import','/','/board','/cinema','/cinema/ted','/cinema/upload','/exhibition','/method','/club','/camp','/shelf'].includes(route) && !route.startsWith('/exhibition?') && !route.startsWith('/camp/') && !activeJournal && <div className="wrap empty-state page-space"><h1>这一页，还在路上。</h1><a href="#/" className="btn btn-dark">回到首页 <ArrowRight size={17}/></a></div>}
     </main>
     <footer className="site-footer"><div className="wrap footer-main">
       <div><Logo small/><p>读一篇读懂，把实力存下。<br/>精读手账 · 陪学营</p></div>

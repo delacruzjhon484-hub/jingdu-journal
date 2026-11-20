@@ -8,7 +8,7 @@ import { importedJournals } from './imported-journals';
 
 const gallery = importedJournals.flatMap(j => j.pdf?.previews.length ? [{ ...j, pdf: j.pdf }] : []);
 type Exhibit = (typeof gallery)[number];
-const roomOf = (item: Exhibit) => rooms.find(room => room.ids.includes(item.id.slice(4)))?.name ?? '其他';
+const roomOf = (item: Exhibit) => rooms.find(room => room.ids.includes(item.id.replace(/^pdf-/, '')))?.name ?? '其他';
 const selections = ['pdf-plant-intelligence','pdf-printing-press','pdf-deep-reading'].map(id => gallery.find(item=>item.id===id)!);
 
 function Viewer({ item, close }: { item: Exhibit; close: () => void }) {

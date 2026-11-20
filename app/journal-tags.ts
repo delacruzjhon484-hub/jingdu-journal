@@ -3,6 +3,7 @@ import { boardScenes } from './scene-board-data';
 import { cinemaFeed, cinemaThemes, type CinemaSubmission } from './cinema-data';
 
 export const rooms = [
+  {name:'TED 演讲',ids:journals.filter(j=>j.tedTopic).map(j=>j.id)},
   { name: '阅读与心智', ids: ['deep-reading','human-memory','neuroplasticity'] },
   { name: '自然与宇宙', ids: ['plant-intelligence','keystone-species','planetary-systems'] },
   { name: '技术与文明', ids: ['tech-efficiency','loop-engineering','printing-press','urban-civilizations'] },
@@ -27,7 +28,7 @@ export function describeBook(j:Journal):StarBook {
   const primary=scenes.find(s=>s.bookIds[0]===j.id)??scenes[0];
   const theme=rooms.find(r=>r.ids.includes(key))?.name??primary?.group??j.category;
   const source=j.pdf?'PDF 原稿':'网页手账';
-  const tags=[theme,j.category,source,...(pdfTopics[key]??[]),...scenes.map(s=>s.title),...((j.level.match(/[ABC][12]/g))??[])];
+  const tags=[theme,j.category,source,...(j.tedTopic?[j.tedTopic]:[]),...(pdfTopics[key]??[]),...scenes.map(s=>s.title),...((j.level.match(/[ABC][12]/g))??[])];
   return {id:j.id,title:j.title.replaceAll('\n',''),theme,category:j.category,tags:[...new Set(tags)],description:j.desc,cover:j.pdf?.cover,source,href:'#/journal/'+j.id};
 }
 export const catalogStars=journals.map(describeBook);
