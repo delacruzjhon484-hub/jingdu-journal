@@ -1,0 +1,32 @@
+.folio,.folio-detail{--ink:#273e34;--subtle:#526359;--rule:#c9cec1;color:var(--ink)}
+.folio{padding-block:clamp(32px,6vw,80px)}
+.folio-mast{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:32px;border-block:1px solid var(--rule);padding-block:32px}
+.folio-mast h1,.folio-detail h1,.folio-row h2,.folio-feature strong{font-family:"Songti SC","STSong",SimSun,serif;font-weight:600}
+.folio-mast h1{font-size:clamp(36px,4.5vw,64px);line-height:1.18;margin:0 0 16px}
+.folio-mast p{font-size:16px;line-height:1.7;color:var(--subtle)}
+.folio-price{display:inline-block;margin-top:16px;font:32px/1.15 Georgia,serif;font-variant-numeric:tabular-nums}
+.folio-price small,.folio-row small,.folio-feature small,.folio-results{font:14px/1.55 system-ui,sans-serif;color:var(--subtle)}
+.folio-feature{display:flex;align-items:center;gap:24px;padding:16px 24px;background:#eeeae0;border-left:3px solid #9a3f31;text-decoration:none}
+.folio-feature strong,.folio-feature span{display:block}.folio-feature strong{font-size:clamp(22px,2vw,32px);margin:8px 0}.folio-feature span{font-size:14px;color:var(--subtle)}
+.folio-plates{position:relative;flex:0 0 100px;height:120px}
+.folio-plates img,.folio-thumb img{background:white;border:1px solid #d4d0c3;object-fit:contain}
+.folio-plates img{position:absolute;width:76px;height:106px;top:8px}
+.folio-inner-page{right:0;transform:rotate(8deg)}.folio-cover-page{left:2px;transform:rotate(-4deg)}
+.folio-tools,.folio-tabs,.folio-search{display:flex;align-items:center}.folio-tools{justify-content:space-between;gap:16px;margin-top:32px}.folio-tabs{flex-wrap:wrap;gap:4px}
+.folio-tabs button,.folio-search,.folio-open,.folio-back{min-height:44px;font-size:15px}
+.folio-tabs button{padding:8px 12px;border-bottom:2px solid transparent;color:var(--subtle)}
+.folio-tabs button[aria-pressed=true]{border-color:#8c382b;color:#693025;font-weight:600}
+.folio-search{flex:0 1 280px;padding:0 12px;gap:8px;border:1px solid #929e94;border-radius:4px;background:#fffdf8}
+.folio-search input{width:100%;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;outline:0}
+.folio-search:focus-within,.folio :is(button,a):focus-visible,.folio-back:focus-visible{outline:2px solid #33624f;outline-offset:3px}
+.folio-results{margin:16px 0 8px}
+.folio-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}
+.folio-row{min-width:0;border-top:1px solid var(--rule);padding:20px 0;display:grid;grid-template-columns:60px minmax(0,1fr) auto;align-items:start;gap:16px}
+.folio-thumb{display:block}.folio-thumb img,.folio-typeset{display:block;width:60px;height:84px}.folio-typeset{border-left:4px solid #6a7868;background:#e4e8da;padding:8px 5px;writing-mode:vertical-rl;font:600 14px/1.5 "Songti SC",serif}
+.folio-row h2{font-size:22px;line-height:1.35;margin:4px 0}.folio-titles{display:flex;flex-wrap:wrap;gap:0 12px}.folio-titles button{color:#395f4e;text-align:start;font-size:14px;line-height:1.55;text-decoration:underline;text-decoration-color:#a2b0a4;text-underline-offset:4px;min-height:40px}.folio-open,.folio-back{color:#345a47;display:inline-flex;align-items:center;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}.folio-empty{padding:20px 0 48px}.folio-empty p{margin-bottom:16px}
+.folio-detail{max-width:900px}.folio-detail .purchase-panel{margin-top:12px;background:#fbfaf5;border-top:3px solid #893d30}.folio-detail h1{font-size:clamp(28px,4vw,48px);line-height:1.25;margin:8px 0 16px}
+.purchase-panel .purchase-heading small,.purchase-panel .purchase-status,.purchase-panel .btn{font-size:14px}.purchase-panel ol{list-style:decimal;list-style-position:outside;padding:0 0 0 24px;margin:20px 0}.purchase-panel ol li{display:list-item;font-size:16px;line-height:1.6;color:#324a3c;border-bottom:1px solid #d6dbce}.purchase-panel ol li::marker{font:14px Georgia,serif;color:#657569}.purchase-panel ol a{display:block;padding:10px 4px;text-decoration:underline;text-decoration-color:#a8b3a7;text-underline-offset:4px}
+@media(max-width:1150px){.folio-list{grid-template-columns:1fr}}
+@media(max-width:720px){.folio-mast{grid-template-columns:1fr;gap:20px;padding-block:24px}.folio-feature{padding:12px 16px;gap:16px}.folio-plates{height:76px;flex-basis:64px}.folio-plates img{width:48px;height:66px;top:4px}.folio-mast h1{margin-bottom:12px}.folio-price{margin-top:12px}.folio-tools{align-items:stretch;flex-direction:column-reverse;margin-top:24px;gap:8px}.folio-search{flex:auto}.folio-row{grid-template-columns:48px minmax(0,1fr) auto;gap:12px;padding:16px 0}.folio-thumb img,.folio-typeset{width:48px;height:68px}.folio-row h2{font-size:20px}.folio-open{font-size:14px}.folio-titles button{min-height:44px}.folio-results{margin-top:8px}.folio-row small{font-size:13px}.folio-detail .purchase-heading{flex-wrap:wrap}}
+
+.front-count .front-shelf-link{display:inline-flex;align-items:center;min-height:44px;color:#325342;text-decoration:underline;text-underline-offset:4px}.front-cover:focus-visible,.front-shelf-link:focus-visible,.folio-detail a:focus-visible{outline:2px solid #33624f;outline-offset:3px}

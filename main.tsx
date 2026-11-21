@@ -13,6 +13,7 @@ import './app/reading-experience.css';
 import './app/journal-shop.css';
 import './app/pdf-library.css';
 import './app/exhibition.css';
+import './app/folio.css';
 createRoot(document.getElementById('root')!).render(<Home/>);
 
 

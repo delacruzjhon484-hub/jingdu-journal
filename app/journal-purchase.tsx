@@ -16,6 +16,6 @@ export function useJournalProduct(id:string){
 export function PurchasePanel({id,product}:{id:string;product:ReturnType<typeof useJournalProduct>}){
  const group=groupById(id)??groupForBook(id);
  if(!group)return <section className="purchase-panel"><a href={studyLink(id)??'#/groups'}>进入免费书房 →</a></section>;
- return <section className="purchase-panel" id="journal-purchase"><small>精读手账 · 七本组</small><h3>{group.title}</h3><strong>¥12.90 / 组</strong><ol>{group.books.map(book=><li key={book}><a href={'#/journal/'+book}>{journals.find(j=>j.id===book)?.title.replaceAll('\n','')}</a></li>)}</ol><p>官网下单，微信扫码后人工核实。核实到账后开通以上全部 7 本。</p><a className="btn btn-dark" href={checkoutLink('/groups/'+group.id)}>前往官网购买这 7 本 · ¥12.90 →</a><AccessHelp/></section>;
+ return <section className="purchase-panel" data-purchase-panel=""><small>精读手账 · 七本组</small>{group.id===id?<h1>{group.title}</h1>:<h3>{group.title}</h3>}<strong>¥12.90 / 组</strong><ol>{group.books.map(book=><li key={book}><a href={'#/journal/'+book}>{journals.find(j=>j.id===book)?.title.replaceAll('\n','')}</a></li>)}</ol><p>官网下单，微信扫码后人工核实。核实到账后开通以上全部 7 本。</p><a className="btn btn-dark" href={checkoutLink('/groups/'+group.id)}>前往官网生成整组订单 · ¥12.90 →</a><AccessHelp/></section>;
 }
 export function JournalPurchase({id}:{id:string}){const product=useJournalProduct(id);return <PurchasePanel id={id} product={product}/>;}
